@@ -21,6 +21,7 @@ namespace VegetableShop.Mvc.Controllers
             _configuration = configuration;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

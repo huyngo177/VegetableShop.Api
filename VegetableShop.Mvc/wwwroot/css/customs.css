@@ -1,0 +1,26 @@
+﻿@charset "utf-8";
+.custom-background {
+    background-image: url('https://toigingiuvedep.vn/wp-content/uploads/2021/08/background-anime-truong-hoc.jpg');
+}
+
+.custom-mt-5 {
+    margin-top: 6rem !important;
+}
+
+.custom-btn-primary {
+    color: #fff;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    margin: auto;
+    width: 100%;
+}
+
+.custom-row {
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 0;
+    display: flex;
+    flex-wrap: inherit;
+    margin-top: calc(var(--bs-gutter-y) * -1);
+    margin-right: calc(var(--bs-gutter-x) * -.5);
+    margin-left: calc(var(--bs-gutter-x) * -.5);
+}
