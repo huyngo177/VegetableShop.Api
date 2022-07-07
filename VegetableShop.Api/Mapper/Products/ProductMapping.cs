@@ -8,12 +8,10 @@ namespace VegetableShop.Api.Mapper.Products
     {
         public ProductMapping()
         {
-            CreateMap<Product, ProductDto>();
+            CreateMap<Product, ProductDto>()
+                .ForMember(x => x.CategoryName, y => y.MapFrom(x => x.Category.Name));
             CreateMap<CreateProductDto, Product>();
-            CreateMap<CreateProductDto, Category>()
-                .ForMember(x => x.Name, y => y.MapFrom(x => x.CategoryName));
             CreateMap<UpdateProductDto, Product>()
-                .ForMember(x => x.Name, y => y.MapFrom(x => x.CategoryName))
                 .ForAllMembers(opts => opts.Condition((source, dest, sourceMember) => sourceMember != null || sourceMember != ""));
         }
     }

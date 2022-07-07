@@ -13,8 +13,10 @@ namespace VegetableShop.Api.Models.Validations.Role
                 .Length(6, 20)
                 .WithMessage("Name must greater than 6 characters and less than 20 characters");
             RuleFor(x => x.Description)
-                .MaximumLength(200)
-                .WithMessage("Description must less than 200 characters");
+                .NotEmpty()
+                .WithMessage("Description required")
+                .Length(2, 255)
+                .WithMessage("Name must greater than 2 characters and less than 255 characters");
         }
     }
 }

@@ -15,7 +15,7 @@ namespace VegetableShop.Api.Services.Products
         private readonly AppDbContext _appDbContext;
         private readonly IStorageService _storageService;
         private readonly IMapper _mapper;
-        private const string CONTENT_FOLDER_NAME = "user-content";
+        private const string CONTENT_FOLDER_NAME = "Images/Products";
         public ProductService(AppDbContext appDbContext, IMapper mapper, IStorageService storageService)
         {
             _appDbContext = appDbContext;
@@ -35,24 +35,23 @@ namespace VegetableShop.Api.Services.Products
             {
                 errors = string.Concat(errors, Exceptions.ProductNameExist);
             }
-            if (await _appDbContext.Categories.FirstOrDefaultAsync(x => x.Name == createProductDto.CategoryName) is null)
+            if (await _appDbContext.Categories.FirstOrDefaultAsync(x => x.Id == createProductDto.CategoryId) is null)
             {
-                errors = string.Concat(errors, Exceptions.CategoryNameNotExist);
+                errors = string.Concat(errors, Exceptions.CategoryNotFound);
             }
             if (errors.Length > 0)
             {
                 return new CreateResponse(errors);
             }
             var product = _mapper.Map<Product>(createProductDto);
-            var category = _mapper.Map<Category>(createProductDto);
+            product.DateUpdated = null;
             var init = _appDbContext.Database.CreateExecutionStrategy();
             await init.ExecuteAsync(async () =>
             {
                 using var trans = await _appDbContext.Database.BeginTransactionAsync();
                 try
                 {
-                    product.Category = category;
-                    product.ImagePath = await SaveFile(createProductDto.Image);
+                    product.ImagePath = await SaveFileAsync(createProductDto.Image);
                     await _appDbContext.Products.AddAsync(product);
                     await _appDbContext.SaveChangesAsync();
                     await trans.CommitAsync();
@@ -80,7 +79,14 @@ namespace VegetableShop.Api.Services.Products
                 {
                     if (!string.IsNullOrEmpty(product.ImagePath))
                     {
-                        await _storageService.DeleteFileAsync(product.ImagePath);
+                        if (await DeleteFilePathAsync(product.ImagePath))
+                        {
+                            _appDbContext.Products.Remove(product);
+                            await _appDbContext.SaveChangesAsync();
+                            await trans.CommitAsync();
+                            return;
+                        }
+                        throw new Exception();
                     }
                     _appDbContext.Products.Remove(product);
                     await _appDbContext.SaveChangesAsync();
@@ -122,7 +128,7 @@ namespace VegetableShop.Api.Services.Products
             {
                 return false;
             }
-            if (await _appDbContext.Categories.FirstOrDefaultAsync(x => x.Name == updateProductDto.CategoryName) is null)
+            if (await _appDbContext.Categories.FirstOrDefaultAsync(x => x.Id == updateProductDto.CategoryId) is null)
             {
                 throw new BadHttpRequestException(Exceptions.CategoryNameNotExist);
             }
@@ -136,7 +142,8 @@ namespace VegetableShop.Api.Services.Products
                 {
                     if (updateProductDto.Image is not null)
                     {
-                        product.ImagePath = await SaveFile(updateProductDto.Image);
+                        product.ImagePath = await SaveFileAsync(updateProductDto.Image);
+                        await DeleteFilePathAsync(product.ImagePath);
                     }
                     _appDbContext.Products.Update(product);
                     await _appDbContext.SaveChangesAsync();
@@ -150,12 +157,16 @@ namespace VegetableShop.Api.Services.Products
             return true;
         }
 
-        private async Task<string> SaveFile(IFormFile file)
+        private async Task<string> SaveFileAsync(IFormFile file)
         {
             var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
             await _storageService.SaveFileAsync(file.OpenReadStream(), fileName);
             return "/" + CONTENT_FOLDER_NAME + "/" + fileName;
+        }
+        private async Task<bool> DeleteFilePathAsync(string filePath)
+        {
+            return await _storageService.DeleteFilePathAsync(filePath);
         }
     }
 }

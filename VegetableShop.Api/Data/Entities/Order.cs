@@ -4,7 +4,7 @@
     {
         public DateTime OrderDate { set; get; }
         public virtual List<OrderDetail> OrderDetails { get; set; }
-        public int UserId { set; get; }
+        public int AppUserId { set; get; }
         public virtual AppUser AppUser { get; set; }
     }
 }

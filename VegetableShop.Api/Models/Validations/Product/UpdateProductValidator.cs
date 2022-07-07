@@ -10,22 +10,20 @@ namespace VegetableShop.Api.Models.Validations.Product
             RuleFor(p => p.Name)
               .NotEmpty()
               .WithMessage("Product required")
-              .Length(6, 20)
-              .WithMessage("Name must greater than 6 characters and less than 20 characters");
+              .Length(2, 20)
+              .WithMessage("Name must greater than 2 characters and less than 20 characters");
             RuleFor(p => p.Price)
                 .NotEmpty()
                 .NotNull()
-                .WithMessage("Price required");
+                .WithMessage("Price required")
+                .GreaterThan(0)
+                .WithMessage("Price must greater than 0");
             RuleFor(p => p.Stock)
                 .NotEmpty()
                 .NotNull()
-                .WithMessage("Price required");
-            RuleFor(p => p.ImagePath)
-                .MaximumLength(200)
-                .WithMessage("Image path must less than 200 characters");
-            RuleFor(p => p.CategoryName)
-                .MaximumLength(20)
-                .WithMessage("Category Name must less than 20 characters");
+                .WithMessage("Price required")
+                .GreaterThan(0)
+                .WithMessage("Stock must greater than 0");
         }
     }
 }

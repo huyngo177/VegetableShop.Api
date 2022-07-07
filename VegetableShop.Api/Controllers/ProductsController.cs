@@ -49,7 +49,7 @@ namespace VegetableShop.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateProductDto updateProductDto)
+        public async Task<IActionResult> UpdateAsync(int id, [FromForm] UpdateProductDto updateProductDto)
         {
             if (await _productService.GetProductByIdAsync(id) is null)
             {

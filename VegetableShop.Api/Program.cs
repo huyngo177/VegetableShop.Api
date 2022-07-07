@@ -11,10 +11,11 @@ using VegetableShop.Api.Models.Validations.User;
 using VegetableShop.Api.Services.Categories;
 using VegetableShop.Api.Services.Products;
 using VegetableShop.Api.Services.Role;
+using VegetableShop.Api.Services.Storage;
 using VegetableShop.Api.Services.User;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddEndpointsApiExplorer();
 //DB Context
 builder.Services.AddDbContext<AppDbContext>(
     options =>
@@ -32,15 +33,16 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IStorageService, StorageService>();
 builder.Services.AddScoped<UserManager<AppUser>>();
 builder.Services.AddScoped<SignInManager<AppUser>>();
 builder.Services.AddScoped<RoleManager<AppRole>>();
 
 //Auto Mapper
-builder.Services.AddAutoMapper(typeof(UserMapping))
-                .AddAutoMapper(typeof(ProductMapping))
-                .AddAutoMapper(typeof(CategoryMapping))
-                .AddAutoMapper(typeof(RoleMapping));
+builder.Services.AddAutoMapper(typeof(UserMapping));
+builder.Services.AddAutoMapper(typeof(ProductMapping));
+builder.Services.AddAutoMapper(typeof(CategoryMapping));
+builder.Services.AddAutoMapper(typeof(RoleMapping));
 
 //Fluent API
 builder.Services.AddControllers()
@@ -66,8 +68,6 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.User.RequireUniqueEmail = true;
 });
 
-
-builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
@@ -87,6 +87,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles();
 
 app.UseAuthorization();
 

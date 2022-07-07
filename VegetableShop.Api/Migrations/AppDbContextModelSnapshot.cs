@@ -247,39 +247,6 @@ namespace VegetableShop.Api.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("VegetableShop.Api.Data.Entities.Cart", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("AppUserId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppUserId")
-                        .IsUnique();
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("Carts", (string)null);
-                });
-
             modelBuilder.Entity("VegetableShop.Api.Data.Entities.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -311,9 +278,6 @@ namespace VegetableShop.Api.Migrations
 
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -365,8 +329,10 @@ namespace VegetableShop.Api.Migrations
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("DateUpdated")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("ImagePath")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -376,6 +342,10 @@ namespace VegetableShop.Api.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Stock")
                         .HasColumnType("int");
@@ -438,25 +408,6 @@ namespace VegetableShop.Api.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("VegetableShop.Api.Data.Entities.Cart", b =>
-                {
-                    b.HasOne("VegetableShop.Api.Data.Entities.AppUser", "AppUser")
-                        .WithOne("Cart")
-                        .HasForeignKey("VegetableShop.Api.Data.Entities.Cart", "AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("VegetableShop.Api.Data.Entities.Product", "Product")
-                        .WithMany("Carts")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AppUser");
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("VegetableShop.Api.Data.Entities.Order", b =>
                 {
                     b.HasOne("VegetableShop.Api.Data.Entities.AppUser", "AppUser")
@@ -500,9 +451,6 @@ namespace VegetableShop.Api.Migrations
 
             modelBuilder.Entity("VegetableShop.Api.Data.Entities.AppUser", b =>
                 {
-                    b.Navigation("Cart")
-                        .IsRequired();
-
                     b.Navigation("Orders");
                 });
 
@@ -518,8 +466,6 @@ namespace VegetableShop.Api.Migrations
 
             modelBuilder.Entity("VegetableShop.Api.Data.Entities.Product", b =>
                 {
-                    b.Navigation("Carts");
-
                     b.Navigation("OrderDetails");
                 });
 #pragma warning restore 612, 618

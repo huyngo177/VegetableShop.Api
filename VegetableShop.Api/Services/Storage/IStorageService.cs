@@ -6,6 +6,8 @@
 
         Task SaveFileAsync(Stream mediaBinaryStream, string fileName);
 
-        Task DeleteFileAsync(string fileName);
+        Task<bool> DeleteFileAsync(string fileName);
+
+        Task<bool> DeleteFilePathAsync(string filePath);
     }
 }

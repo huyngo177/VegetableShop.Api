@@ -37,7 +37,7 @@ namespace VegetableShop.Api.Services.Categories
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var category = await GetCategoryByIdAsync(id);
+            var category = _appDbContext.Categories.FirstOrDefault(x => x.Id == id);
             if (category is null)
             {
                 return false;
@@ -48,7 +48,7 @@ namespace VegetableShop.Api.Services.Categories
                 using var trans = await _appDbContext.Database.BeginTransactionAsync();
                 try
                 {
-                    _appDbContext.Categories.Remove(_mapper.Map<Category>(category));
+                    _appDbContext.Categories.Remove(category);
                     await _appDbContext.SaveChangesAsync();
                     await trans.CommitAsync();
                 }

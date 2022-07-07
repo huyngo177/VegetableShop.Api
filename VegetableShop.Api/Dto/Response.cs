@@ -16,6 +16,7 @@
         }
         public Response()
         {
+            IsSuccess = true;
         }
     }
 }

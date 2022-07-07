@@ -17,8 +17,6 @@ namespace VegetableShop.Api.Data.EF
 
             modelBuilder.ApplyConfiguration(new AppRoleConfiguration());
 
-            modelBuilder.ApplyConfiguration(new CartConfiguration());
-
             modelBuilder.ApplyConfiguration(new CategoryConfiguration());
 
             modelBuilder.ApplyConfiguration(new OrderConfiguration());
@@ -31,7 +29,6 @@ namespace VegetableShop.Api.Data.EF
         }
         public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<AppRole> AppRoles { get; set; }
-        public DbSet<Cart> Carts { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
