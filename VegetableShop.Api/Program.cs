@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using VegetableShop.Api.Data.EF;
 using VegetableShop.Api.Data.Entities;
+using VegetableShop.Api.Dto;
 using VegetableShop.Api.Mapper.Categories;
 using VegetableShop.Api.Mapper.Products;
 using VegetableShop.Api.Mapper.Role;
@@ -15,6 +16,14 @@ using VegetableShop.Api.Services.Storage;
 using VegetableShop.Api.Services.User;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "_allowSpecificOrigins",
+                      policy =>
+                      {
+                          policy.WithOrigins("https://localhost:7230", "https://localhost:7157").AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin();
+                      });
+});
 builder.Services.AddEndpointsApiExplorer();
 //DB Context
 builder.Services.AddDbContext<AppDbContext>(
@@ -92,6 +101,10 @@ app.UseStaticFiles();
 
 app.UseAuthorization();
 
+app.UseMiddleware<ExceptionHandler>();
+
 app.MapControllers();
+
+app.UseCors("_allowSpecificOrigins");
 
 app.Run();

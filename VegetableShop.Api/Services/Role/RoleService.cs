@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using System.Data.Entity;
 using VegetableShop.Api.Common;
 using VegetableShop.Api.Data.Entities;
 using VegetableShop.Api.Dto;
@@ -22,11 +21,11 @@ namespace VegetableShop.Api.Services.Role
         {
             if (createRoleDto is null)
             {
-                throw new BadHttpRequestException(Exceptions.BadRequest);
+                throw new AppException(Exceptions.BadRequest);
             }
             if (await _roleManager.FindByNameAsync(createRoleDto.Name) is not null)
             {
-                throw new BadHttpRequestException(Exceptions.RoleNameExist);
+                throw new AppException(Exceptions.RoleNameExist);
             }
             var roleDto = _mapper.Map<AppRole>(createRoleDto);
             var result = await _roleManager.CreateAsync(roleDto);
@@ -34,7 +33,7 @@ namespace VegetableShop.Api.Services.Role
             {
                 return new CreateResponse(_mapper.Map<AppRoleDto>(roleDto), Messages.CreateSuccess);
             }
-            return new CreateResponse(Exceptions.CreateFail);
+            throw new AppException(Exceptions.CreateFail);
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -60,7 +59,7 @@ namespace VegetableShop.Api.Services.Role
             var role = await _roleManager.FindByIdAsync(id.ToString());
             if (role is null)
             {
-                return null;
+                throw new KeyNotFoundException(Exceptions.RoleNotFound);
             }
             return _mapper.Map<AppRoleDto>(role);
         }
@@ -70,7 +69,7 @@ namespace VegetableShop.Api.Services.Role
             var role = await _roleManager.FindByIdAsync(id.ToString());
             if (role is null)
             {
-                return false;
+                throw new KeyNotFoundException(Exceptions.RoleNotFound);
             }
             var roleDto = _mapper.Map(updateRoleDto, role);
             var result = await _roleManager.UpdateAsync(roleDto);

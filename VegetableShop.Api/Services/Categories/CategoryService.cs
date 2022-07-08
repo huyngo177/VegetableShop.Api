@@ -23,11 +23,11 @@ namespace VegetableShop.Api.Services.Categories
         {
             if (createCategoryDto is null)
             {
-                throw new BadHttpRequestException(Exceptions.BadRequest);
+                throw new AppException(Exceptions.BadRequest);
             }
             if (_appDbContext.Categories.FirstOrDefault(x => x.Name.Equals(createCategoryDto.Name)) is not null)
             {
-                return new CreateResponse(Exceptions.CategoryNameExist);
+                throw new AppException(Exceptions.CategoryNameExist);
             }
             var category = _mapper.Map<Category>(createCategoryDto);
             await _appDbContext.Categories.AddAsync(category);
@@ -40,7 +40,7 @@ namespace VegetableShop.Api.Services.Categories
             var category = _appDbContext.Categories.FirstOrDefault(x => x.Id == id);
             if (category is null)
             {
-                return false;
+                throw new KeyNotFoundException(Exceptions.CategoryNotFound);
             }
             var init = _appDbContext.Database.CreateExecutionStrategy();
             await init.ExecuteAsync(async () =>
@@ -72,7 +72,7 @@ namespace VegetableShop.Api.Services.Categories
             var category = await _appDbContext.Categories.FindAsync(id);
             if (category is null)
             {
-                throw new BadHttpRequestException(Exceptions.CategoryNotFound);
+                throw new KeyNotFoundException(Exceptions.CategoryNotFound);
             }
             return _mapper.Map<CategoryDto>(category);
         }
@@ -81,7 +81,7 @@ namespace VegetableShop.Api.Services.Categories
         {
             if (updateCategoryDto is null)
             {
-                throw new BadHttpRequestException(Exceptions.BadRequest);
+                throw new AppException(Exceptions.BadRequest);
             }
             var category = _appDbContext.Categories.FirstOrDefault(x => x.Id == id);
             if (category is null)

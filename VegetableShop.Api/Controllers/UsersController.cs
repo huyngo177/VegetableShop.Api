@@ -19,6 +19,7 @@ namespace VegetableShop.Api.Controllers
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<IActionResult> LoginAsycn([FromBody] LoginDto loginDto)
         {
             var result = await _userService.LoginAsync(loginDto);
@@ -51,6 +52,7 @@ namespace VegetableShop.Api.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> CreateAsync([FromBody] CreateUserDto createUserDto)
         {
             var result = await _userService.CreateAsync(createUserDto);
@@ -58,7 +60,7 @@ namespace VegetableShop.Api.Controllers
             {
                 return Created(new Uri($"{_configuration["BaseAddress"]}/api/users/{result.appUserDto.Id}"), result.appUserDto);
             }
-            return BadRequest(result.Message);
+            return BadRequest();
         }
 
         [HttpPut("{id}")]

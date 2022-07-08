@@ -38,7 +38,7 @@ namespace VegetableShop.Api.Services.User
             var user = await _userManager.FindByIdAsync(id.ToString());
             if (user is null)
             {
-                return false;
+                throw new KeyNotFoundException(Exceptions.UserNotFound);
             }
             await _userManager.AddToRolesAsync(user, roles);
             return true;
@@ -49,7 +49,7 @@ namespace VegetableShop.Api.Services.User
             string errors = "";
             if (createUserDto is null)
             {
-                throw new BadHttpRequestException(Exceptions.BadRequest);
+                throw new AppException(Exceptions.BadRequest);
             }
             if (await _userManager.FindByEmailAsync(createUserDto.Email) is not null)
             {
@@ -61,7 +61,7 @@ namespace VegetableShop.Api.Services.User
             }
             if (errors.Length > 0)
             {
-                return new CreateResponse(errors);
+                throw new AppException(errors);
             }
             var user = _mapper.Map<AppUser>(createUserDto);
             var userDto = new AppUserDto();
@@ -85,13 +85,13 @@ namespace VegetableShop.Api.Services.User
                         await trans.CommitAsync();
                         return new CreateResponse(userDto, Messages.CreateSuccess);
                     }
-                    return new CreateResponse(Exceptions.CreateFail);
+                    throw new AppException(Exceptions.CreateFail);
                 }
                 catch (Exception e)
                 {
                     await trans?.RollbackAsync();
                 }
-                return new CreateResponse(Exceptions.CreateFail);
+                throw new AppException(Exceptions.CreateFail);
             }
             return await init.ExecuteAsync(Values);
         }
@@ -101,7 +101,7 @@ namespace VegetableShop.Api.Services.User
             var user = await _userManager.FindByIdAsync(id.ToString());
             if (user is null)
             {
-                throw new BadHttpRequestException(Exceptions.UserNotFound);
+                throw new AppException(Exceptions.UserNotFound);
             }
             var result = await _userManager.DeleteAsync(user);
             if (result.Succeeded)
@@ -130,7 +130,7 @@ namespace VegetableShop.Api.Services.User
             var user = await _userManager.FindByIdAsync(id.ToString());
             if (user is null)
             {
-                throw new BadHttpRequestException(Exceptions.UserNotFound);
+                throw new AppException(Exceptions.UserNotFound);
             }
             return _mapper.Map<AppUserDto>(user);
         }
@@ -140,7 +140,7 @@ namespace VegetableShop.Api.Services.User
             var user = await _userManager.FindByNameAsync(username);
             if (user is null)
             {
-                throw new BadHttpRequestException(Exceptions.UserNotFound);
+                throw new AppException(Exceptions.UserNotFound);
             }
             return _mapper.Map<AppUserDto>(user);
         }
@@ -150,11 +150,7 @@ namespace VegetableShop.Api.Services.User
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
             if (user is null)
             {
-                return new Response()
-                {
-                    IsSuccess = false,
-                    Message = Exceptions.EmailNotFound
-                };
+                throw new AppException(Exceptions.EmailNotFound);
             }
             var res = await _userManager.GetLockoutEndDateAsync(user);
             DateTimeOffset? dateTimeOffset = res.HasValue ? res : null;
@@ -163,22 +159,14 @@ namespace VegetableShop.Api.Services.User
                 _ = int.TryParse(_configuration["ValidateJwt:DefaultLockoutTimeSpan"], out int lockoutTime);
                 if (dateTimeOffset?.AddMinutes(lockoutTime) > DateTime.Now)
                 {
-                    return new Response()
-                    {
-                        IsSuccess = false,
-                        Message = Exceptions.EmailBlocked
-                    };
+                    throw new AppException(Exceptions.EmailBlocked);
                 }
             }
             var roles = await _userManager.GetRolesAsync(user);
             var result = await _signInManager.PasswordSignInAsync(user, loginDto.Password, loginDto.RememberMe, true);
             if (!result.Succeeded)
             {
-                return new Response()
-                {
-                    IsSuccess = false,
-                    Message = Exceptions.LoginFail
-                };
+                throw new AppException(Exceptions.LoginFail);
             }
 
             var claims = new List<Claim>()
@@ -211,14 +199,14 @@ namespace VegetableShop.Api.Services.User
         {
             if (tokenDto is null)
             {
-                throw new BadHttpRequestException(Exceptions.InvalidRequest);
+                throw new AppException(Exceptions.InvalidRequest);
             }
             string? accessToken = tokenDto.AccessToken;
             string? refreshToken = tokenDto.RefreshToken;
             var principal = TokenValidation(accessToken);
             if (principal is null)
             {
-                throw new BadHttpRequestException(Exceptions.ValidateTokenFail);
+                throw new AppException(Exceptions.ValidateTokenFail);
             }
             var user = await _userManager.FindByNameAsync(principal.Identity?.Name);
             if (user is null || user.RefreshToken != refreshToken)
@@ -272,7 +260,7 @@ namespace VegetableShop.Api.Services.User
         {
             if (string.IsNullOrEmpty(id.ToString()))
             {
-                throw new BadHttpRequestException(Exceptions.NullId);
+                throw new AppException(Exceptions.NullId);
             }
             var user = await _userManager.FindByIdAsync(id.ToString());
             if (user is null)

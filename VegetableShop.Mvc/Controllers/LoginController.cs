@@ -31,10 +31,14 @@ namespace VegetableShop.Mvc.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(LoginRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(ModelState);
+            }
             var result = await _userApiClient.Login(request);
             if (result.Token is null)
             {
-                TempData["Message"] = result.Message;
+                ModelState.AddModelError("", result.Message);
                 return View();
             }
             var userPrincipal = ValidateToken(result.Token);

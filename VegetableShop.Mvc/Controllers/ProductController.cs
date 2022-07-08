@@ -1,18 +1,24 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using VegetableShop.Mvc.ApiClient.Category;
 using VegetableShop.Mvc.ApiClient.Products;
 using VegetableShop.Mvc.Models.Products;
 
 namespace VegetableShop.Mvc.Controllers
 {
+    [Authorize]
     public class ProductController : Controller
     {
         private readonly IProductApiClient _productApiClient;
+        private readonly ICategoryApiClient _categoryApiClient;
         private readonly IMapper _mapper;
-        public ProductController(IProductApiClient productApiClient, IMapper mapper)
+        public ProductController(IProductApiClient productApiClient, IMapper mapper, ICategoryApiClient categoryApiClient)
         {
             _productApiClient = productApiClient;
             _mapper = mapper;
+            _categoryApiClient = categoryApiClient;
         }
 
         public async Task<IActionResult> Index()
@@ -27,12 +33,15 @@ namespace VegetableShop.Mvc.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var categories = await _categoryApiClient.GetAllAsync();
+            ViewBag.Categories = categories;
             return View();
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateProductRequest request)
         {
             var response = await _productApiClient.CreateAsync(request);
@@ -40,7 +49,7 @@ namespace VegetableShop.Mvc.Controllers
             {
                 return RedirectToAction("Index");
             }
-            return View(request);
+            return View();
         }
 
         [HttpGet]
@@ -51,6 +60,7 @@ namespace VegetableShop.Mvc.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(int id, UpdateProductRequest request)
         {
             var response = await _productApiClient.UpdateAsync(id, request);
@@ -62,14 +72,17 @@ namespace VegetableShop.Mvc.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
             var response = await _productApiClient.DeleteAsync(id);
             if (response.IsSuccess)
             {
-                return View("Index");
+                TempData["Message"] = "Delete product success";
+                return View();
             }
-            return View("Index", new { message = response.Message });
+            TempData["Message"] = "Delete product fail";
+            return RedirectToAction("Index", new { message = response.Message });
         }
     }
 }

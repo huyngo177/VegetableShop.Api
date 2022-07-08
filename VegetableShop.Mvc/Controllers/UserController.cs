@@ -1,10 +1,14 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VegetableShop.Mvc.ApiClient.User;
 using VegetableShop.Mvc.Models.User;
 
 namespace VegetableShop.Mvc.Controllers
 {
+    [Authorize]
     public class UserController : Controller
     {
         private readonly IUserApiClient _userApiClient;
@@ -29,12 +33,15 @@ namespace VegetableShop.Mvc.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
         public async Task<IActionResult> Create(CreateUserRequest request)
         {
             var response = await _userApiClient.CreateAsync(request);
@@ -59,6 +66,7 @@ namespace VegetableShop.Mvc.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(int id, UpdateUserRequest request)
         {
             var response = await _userApiClient.UpdateAsync(id, request);
@@ -70,6 +78,7 @@ namespace VegetableShop.Mvc.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
             var response = await _userApiClient.DeleteAsync(id);
@@ -78,6 +87,15 @@ namespace VegetableShop.Mvc.Controllers
                 return RedirectToAction("Index");
             }
             return View("Index", new { message = response.Message });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            
+            return RedirectToAction("Index", "Login");
         }
     }
 }

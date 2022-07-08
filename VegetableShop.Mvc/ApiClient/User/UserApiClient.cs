@@ -46,10 +46,9 @@ namespace VegetableShop.Mvc.ApiClient.User
                 var data = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<CreateResponse>(data);
             }
-            var body = JsonConvert.DeserializeObject<CreateResponse>(await response.Content.ReadAsStringAsync());
+            var body = JsonConvert.DeserializeObject<CreateResponse>(response.Content.ReadAsStringAsync().Result);
             body.IsSuccess = false;
             return body;
-
         }
 
         public async Task<Response> UpdateAsync(int id, UpdateUserRequest request)

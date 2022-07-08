@@ -28,7 +28,7 @@ namespace VegetableShop.Api.Services.Products
             string errors = "";
             if (createProductDto is null)
             {
-                throw new BadHttpRequestException(Exceptions.BadRequest);
+                throw new AppException(Exceptions.BadRequest);
             }
             var result = await _appDbContext.Products.FirstOrDefaultAsync(x => x.Name == createProductDto.Name);
             if (result is not null)
@@ -41,7 +41,7 @@ namespace VegetableShop.Api.Services.Products
             }
             if (errors.Length > 0)
             {
-                return new CreateResponse(errors);
+                throw new AppException(errors);
             }
             var product = _mapper.Map<Product>(createProductDto);
             product.DateUpdated = null;
@@ -69,7 +69,7 @@ namespace VegetableShop.Api.Services.Products
             var product = await _appDbContext.Products.FirstOrDefaultAsync(x => x.Id == id);
             if (product is null)
             {
-                return false;
+                throw new KeyNotFoundException(Exceptions.ProductNotFound);
             }
             var init = _appDbContext.Database.CreateExecutionStrategy();
             await init.ExecuteAsync(async () =>
@@ -86,7 +86,7 @@ namespace VegetableShop.Api.Services.Products
                             await trans.CommitAsync();
                             return;
                         }
-                        throw new Exception();
+                        throw new AppException(Exceptions.DeleteteFail);
                     }
                     _appDbContext.Products.Remove(product);
                     await _appDbContext.SaveChangesAsync();
@@ -112,7 +112,7 @@ namespace VegetableShop.Api.Services.Products
             var product = await _appDbContext.Products.Include(x => x.Category).FirstOrDefaultAsync(x => x.Id == id);
             if (product is null)
             {
-                throw new BadHttpRequestException(Exceptions.ProductNotFound);
+                throw new KeyNotFoundException(Exceptions.ProductNotFound);
             }
             return _mapper.Map<ProductDto>(product);
         }
@@ -121,7 +121,7 @@ namespace VegetableShop.Api.Services.Products
         {
             if (updateProductDto == null)
             {
-                throw new BadHttpRequestException(Exceptions.BadRequest);
+                throw new AppException(Exceptions.BadRequest);
             }
             var result = _appDbContext.Products.FirstOrDefault(x => x.Id == id);
             if (result is null)
@@ -130,7 +130,7 @@ namespace VegetableShop.Api.Services.Products
             }
             if (await _appDbContext.Categories.FirstOrDefaultAsync(x => x.Id == updateProductDto.CategoryId) is null)
             {
-                throw new BadHttpRequestException(Exceptions.CategoryNameNotExist);
+                throw new AppException(Exceptions.CategoryNameNotExist);
             }
 
             var product = _mapper.Map(updateProductDto, result);

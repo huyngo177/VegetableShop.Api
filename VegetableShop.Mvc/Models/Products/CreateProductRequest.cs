@@ -12,7 +12,7 @@ namespace VegetableShop.Mvc.Models.Products
         [Range(typeof(decimal), "0", "999999", ErrorMessage = "{0} must be a number between {1} and {2}")]
         public decimal Price { set; get; }
         [Required(ErrorMessage = "Please enter price")]
-        [Range(typeof(decimal), "0", "9999", ErrorMessage = "{0} must be a number between {1} and {2}")]
+        [Range(typeof(int), "0", "9999", ErrorMessage = "{0} must be a number between {1} and {2}")]
         public int Stock { set; get; }
         public DateTime DateCreated { set; get; } = DateTime.Now;
         public IFormFile? Image { get; set; }

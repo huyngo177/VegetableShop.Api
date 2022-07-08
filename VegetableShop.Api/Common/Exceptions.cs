@@ -10,6 +10,8 @@
         public const string UsernameExist = "Username exist ";
         public const string LoginFail = "Please check email and password again";
         public const string CreateFail = "Create fail ";
+        public const string UpdateFail = "Update fail ";
+        public const string DeleteteFail = "Delete fail ";
         public const string InvalidRequest = "Invalid request ";
         public const string InvalidToken = "Invalid token ";
         public const string ValidateTokenFail = "Validate token fail";
