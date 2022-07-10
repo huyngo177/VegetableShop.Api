@@ -1,4 +1,5 @@
 ﻿@charset "utf-8";
+
 .custom-background {
     background-image: url('https://toigingiuvedep.vn/wp-content/uploads/2021/08/background-anime-truong-hoc.jpg');
 }
@@ -23,4 +24,9 @@
     margin-top: calc(var(--bs-gutter-y) * -1);
     margin-right: calc(var(--bs-gutter-x) * -.5);
     margin-left: calc(var(--bs-gutter-x) * -.5);
+}
+
+.custom-td {
+    text-align: center;
+    vertical-align: middle;
 }

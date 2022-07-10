@@ -76,7 +76,11 @@ namespace VegetableShop.Api.Services.User
                     {
                         if (!await _roleManager.RoleExistsAsync(Roles.Member))
                         {
-                            await _roleManager.CreateAsync(new AppRole() { Name = Roles.Member });
+                            await _roleManager.CreateAsync(new AppRole()
+                            {
+                                Name = Roles.Member,
+                                Description = "Member Role"
+                            });
                         }
                         await _userManager.AddToRoleAsync(user, Roles.Member);
                         var roles = await _userManager.GetRolesAsync(user);

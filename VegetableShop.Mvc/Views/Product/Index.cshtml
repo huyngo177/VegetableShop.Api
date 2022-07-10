@@ -66,34 +66,34 @@
         @foreach (var item in Model)
         {
             <tr class="text-center">
-                <td>
+                <td class="custom-td">
                     @Html.DisplayFor(modelItem => item.Id)
                 </td>
-                <td>
+                <td class="custom-td">
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
-                <td>
+                <td class="custom-td">
                     @Html.DisplayFor(modelItem => item.Price)
                 </td>
-                <td>
+                <td class="custom-td">
                     @Html.DisplayFor(modelItem => item.Stock)
                 </td>
-                <td>
+                <td class="custom-td">
                     @Html.DisplayFor(modelItem => item.DateCreated)
                 </td>
-                <td>
+                <td class="custom-td">
                     @Html.DisplayFor(modelItem => item.DateUpdated)
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ImagePath)
+                <td class="custom-td">
+                    <img src="@item.ImagePath" alt="The image of @item.Name" width="60" height="60"></img>
                 </td>
-                <td>
+                <td class="custom-td">
                     @Html.DisplayFor(modelItem => item.CategoryName)
                 </td>
-                <td>
+                <td class="custom-td">
                     @Html.DisplayFor(modelItem => item.Status)
                 </td>
-                <td>
+                <td class="custom-td">
                     <form asp-action="Delete" asp-route-id="@item.Id" method="post">
                         <a asp-action="Update" asp-route-id="@item.Id" method="post" class="btn btn-primary">
                             Update

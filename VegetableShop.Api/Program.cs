@@ -1,6 +1,12 @@
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Security.Claims;
+using System.Text;
+using VegetableShop.Api.Common;
 using VegetableShop.Api.Data.EF;
 using VegetableShop.Api.Data.Entities;
 using VegetableShop.Api.Dto;
@@ -16,14 +22,7 @@ using VegetableShop.Api.Services.Storage;
 using VegetableShop.Api.Services.User;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: "_allowSpecificOrigins",
-                      policy =>
-                      {
-                          policy.WithOrigins("https://localhost:7230", "https://localhost:7157").AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin();
-                      });
-});
+
 builder.Services.AddEndpointsApiExplorer();
 //DB Context
 builder.Services.AddDbContext<AppDbContext>(
@@ -77,7 +76,78 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.User.RequireUniqueEmail = true;
 });
 
-builder.Services.AddSwaggerGen();
+//Ad Authenticate
+builder.Services
+    .AddAuthentication(opt =>
+    {
+        opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(opt =>
+    {
+        opt.RequireHttpsMetadata = false;
+        opt.SaveToken = true;
+        opt.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration.GetSection("Jwt:Issuer").Value,
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration.GetSection("Jwt:Audience").Value,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            RequireExpirationTime = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Jwt:SecretKey").Value)),
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+//Add Authorize
+builder.Services.AddAuthorization(opt =>
+{
+    opt.AddPolicy("AdminPolicy",
+      policy =>
+      {
+          policy.RequireClaim(ClaimTypes.Role, Roles.Admin);
+      });
+    opt.AddPolicy("MemberPolicy",
+        policy => policy.RequireClaim(ClaimTypes.Role, Roles.Member));
+});
+
+//Add Swagger
+builder.Services.AddSwaggerGen(swagger =>
+{
+    swagger.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "JWT Token Authentication API",
+        Description = "ASP.NET Core 6.0 Web API"
+    });
+    swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n " +
+                        "Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\n" +
+                        "Example: \"Bearer 12345abcdef\"",
+    });
+    swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                          new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "Bearer"
+                                }
+                            },
+                            new string[] {}
+                    }
+                });
+});
 
 var app = builder.Build();
 
@@ -104,7 +174,5 @@ app.UseAuthorization();
 app.UseMiddleware<ExceptionHandler>();
 
 app.MapControllers();
-
-app.UseCors("_allowSpecificOrigins");
 
 app.Run();

@@ -92,9 +92,17 @@ namespace VegetableShop.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> Logout()
         {
-
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            
+            //if (HttpContext.Request.Cookies.Count > 0)
+            //{
+            //    var siteCookies = HttpContext.Request.Cookies.Where(c => c.Key.Contains(".AspNetCore.") || c.Key.Contains("Microsoft.Authentication"));
+            //    foreach (var cookie in siteCookies)
+            //    {
+            //        Response.Cookies.Delete(cookie.Key);
+            //    }
+            //}
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme) ;
+            //localStorage.clear();
+            //HttpContext.Session.Clear();
             return RedirectToAction("Index", "Login");
         }
     }

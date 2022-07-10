@@ -45,21 +45,19 @@ namespace VegetableShop.Mvc.Controllers
             var authProperties = new AuthenticationProperties
             {
                 ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
-                IsPersistent = false
+                IsPersistent = true
             };
             HttpContext.Session.SetString("Token", result.Token);
             await HttpContext.SignInAsync(
                         CookieAuthenticationDefaults.AuthenticationScheme,
                         userPrincipal,
                         authProperties);
-
+            //HttpContext.User.IsInRole("Ad")
             return RedirectToAction("Index", "Home");
         }
 
         private ClaimsPrincipal ValidateToken(string jwtToken)
         {
-            IdentityModelEventSource.ShowPII = true;
-
             SecurityToken validatedToken;
             TokenValidationParameters validationParameters = new TokenValidationParameters();
 

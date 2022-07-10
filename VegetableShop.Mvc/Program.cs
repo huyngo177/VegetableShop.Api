@@ -19,7 +19,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.LoginPath = "/Login/Index";
-        options.LogoutPath = "/User/Logout";
+        //options.LogoutPath = "/User/Logout";
         options.AccessDeniedPath = "/User/Forbidden/";
     });
 
@@ -39,7 +39,6 @@ builder.Services.AddScoped<IUserApiClient, UserApiClient>();
 builder.Services.AddScoped<IProductApiClient, ProductApiClient>();
 builder.Services.AddScoped<ICategoryApiClient, CategoryApiClient>();
 builder.Services.AddAutoMapper(typeof(UserMapping));
-
 builder.Services.AddRazorPages();
 
 var app = builder.Build();

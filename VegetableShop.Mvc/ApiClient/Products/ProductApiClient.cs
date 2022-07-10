@@ -49,7 +49,14 @@ namespace VegetableShop.Mvc.ApiClient.Products
 
         public async Task<IEnumerable<ProductViewModel>> GetAllAsync()
         {
-            return await GetAsync<IEnumerable<ProductViewModel>>("api/products");
+            var products = await GetAsync<IEnumerable<ProductViewModel>>("api/products");
+            var list = new List<ProductViewModel>();
+            foreach (var product in products)
+            {
+                product.ImagePath = $"{_imagePath}{product.ImagePath}";
+                list.Add(product);
+            }
+            return list;
         }
 
         public async Task<ProductViewModel> GetProductByIdAsync(int id)
