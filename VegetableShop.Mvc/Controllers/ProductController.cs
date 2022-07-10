@@ -2,7 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using VegetableShop.Mvc.ApiClient.Category;
+using VegetableShop.Api.Data.Entities;
+using VegetableShop.Mvc.ApiClient.Categories;
 using VegetableShop.Mvc.ApiClient.Products;
 using VegetableShop.Mvc.Models.Products;
 
@@ -37,7 +38,7 @@ namespace VegetableShop.Mvc.Controllers
         {
             var categories = await _categoryApiClient.GetAllAsync();
             ViewBag.Categories = categories;
-            return View();
+            return View(categories);
         }
 
         [HttpPost]

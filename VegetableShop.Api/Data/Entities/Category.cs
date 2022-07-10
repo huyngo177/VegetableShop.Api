@@ -1,4 +1,6 @@
-﻿namespace VegetableShop.Api.Data.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace VegetableShop.Api.Data.Entities
 {
     public class Category : BaseEntity
     {

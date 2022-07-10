@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using VegetableShop.Api.Mapper.User;
-using VegetableShop.Mvc.ApiClient.Category;
+using VegetableShop.Mvc.ApiClient.Categories;
 using VegetableShop.Mvc.ApiClient.Products;
 using VegetableShop.Mvc.ApiClient.User;
 

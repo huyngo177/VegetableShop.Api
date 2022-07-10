@@ -1,14 +1,14 @@
-﻿@using VegetableShop.Mvc.Models.Category
+﻿@using VegetableShop.Mvc.Models.Categories
 @model VegetableShop.Mvc.Models.Products.CreateProductRequest
 
 @{
     ViewData["Title"] = "Create";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
-
-<hr />
-<div class="card shadow-lg border-0 rounded-lg mt-5">
-    <div class="card-header"><h3 class="page-header text-center">Product</h3></div>
+<br />
+<div>
+    <h3 class="page-header text-center">CREATE NEW PRODUCT</h3>
+    <hr />
     <div class="card-body">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -54,22 +54,14 @@
                 </div>
                 <div class="col-md-6">
                     <label asp-for="CategoryId" class="control-label"></label>
-                    @if (ViewBag.Categories != null)
-                    {
-                        <select class="custom-select-sm">
-                            <option selected>--Select Category--</option>
-                            @foreach (var item in ViewBag.Categories)
-                            {
-                                <option value="@item.Id">@item.Name</option>
-                            }
-                        </select>
-                    }
+                    <select asp-for="CategoryId" class="form-control" asp-items="new SelectList(ViewBag.Categories)">
+                        <option>--Select--</option>
+                    </select>
                 </div>
-            </div>
-            <div>
-                <input type="submit" value="Create" class="btn btn-primary" />
-                <a class="btn btn-success" asp-action="Index" asp-controller="Product">Back</a>
-            </div>
+                <div>
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                    <a class="btn btn-success" asp-action="Index" asp-controller="Product">Back</a>
+                </div>
         </form>
     </div>
 </div>

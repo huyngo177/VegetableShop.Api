@@ -1,4 +1,4 @@
-﻿using VegetableShop.Mvc.Models.Category;
+﻿using VegetableShop.Mvc.Models.Categories;
 using VegetableShop.Mvc.Models.Products;
 using VegetableShop.Mvc.Models.Role;
 using VegetableShop.Mvc.Models.User;

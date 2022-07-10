@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
-using VegetableShop.Mvc.Models.Category;
+using VegetableShop.Api.Data.Entities;
+using VegetableShop.Mvc.Models.Categories;
 
-namespace VegetableShop.Mvc.ApiClient.Category
+namespace VegetableShop.Mvc.ApiClient.Categories
 {
     public class CategoryApiClient : BaseApiClient, ICategoryApiClient
     {
@@ -21,6 +22,11 @@ namespace VegetableShop.Mvc.ApiClient.Category
         public async Task<IEnumerable<CategoryViewModel>> GetAllAsync()
         {
             return await GetAsync<IEnumerable<CategoryViewModel>>("api/categories");
+        }
+
+        public async Task<IList<Category>> SelectAll()
+        {
+            return await GetAsync<IList<Category>>("api/categories");
         }
     }
 }

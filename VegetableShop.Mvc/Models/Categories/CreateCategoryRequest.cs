@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace VegetableShop.Mvc.Models.Category
+namespace VegetableShop.Mvc.Models.Categories
 {
     public class CreateCategoryRequest
     {

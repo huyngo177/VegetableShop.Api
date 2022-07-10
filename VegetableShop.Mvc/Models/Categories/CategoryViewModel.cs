@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using VegetableShop.Api.Data.Entities;
-namespace VegetableShop.Mvc.Models.Category
+namespace VegetableShop.Mvc.Models.Categories
 {
     public class CategoryViewModel
     {

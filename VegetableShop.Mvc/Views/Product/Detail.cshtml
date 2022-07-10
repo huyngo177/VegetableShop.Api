@@ -4,68 +4,72 @@
     ViewData["Title"] = "Detail";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
-
+<br />
 <div>
-    <h4>ProductViewModel</h4>
+    <h3 class="page-header text-center">DETAIL</h3>
     <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Id)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Id)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Stock)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Stock)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DateCreated)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DateCreated)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DateUpdated)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DateUpdated)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ImagePath)
-        </dt>
-        <dd class="col-sm-10">
-            <img src="@Model.ImagePath" alt="The image of @Model.Name"></img>
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.CategoryName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.CategoryName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-    </dl>
-</div>
-<div>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-    <a asp-action="Index">Back to List</a>
+    <div class="card-body">
+        <div class="col-md-12">
+            <dl class="row">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Id):
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Id)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Name):
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Name)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Price):
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Price)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Stock):
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Stock)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.DateCreated):
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.DateCreated)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.DateUpdated):
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.DateUpdated)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.ImagePath):
+                </dt>
+                <dd class="col-sm-10">
+                    <img src="@Model.ImagePath" alt="The image of @Model.Name" width="60" height="60">
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.CategoryName):
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.CategoryName)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Status):
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Status)
+                </dd>
+            </dl>
+            <div>
+                <a class="btn btn-primary" asp-action="Update" asp-controller="Product" asp-route-id="@Model.Id">Update</a>
+                <a class="btn btn-success" asp-action="Index" asp-controller="Product">Back to list</a>
+            </div>
+        </div>
+    </div>
 </div>
