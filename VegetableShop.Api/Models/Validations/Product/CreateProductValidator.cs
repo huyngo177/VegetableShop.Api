@@ -28,6 +28,10 @@ namespace VegetableShop.Api.Models.Validations.Product
                 .WithMessage("Stock must greater than 0")
                 .LessThan(9999)
                 .WithMessage("Stock must less than 9999");
+            RuleFor(p => p.Description)
+               .NotEmpty()
+               .NotNull()
+               .WithMessage("Description required");
         }
     }
 }

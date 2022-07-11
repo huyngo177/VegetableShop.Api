@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace VegetableShop.Mvc.Models.Products
 {
@@ -17,5 +18,7 @@ namespace VegetableShop.Mvc.Models.Products
         [DisplayName("Category Name")]
         public string? CategoryName { get; set; }
         public string Status { get; set; }
+        [Required(ErrorMessage = "Description required")]
+        public string Description { get; set; }
     }
 }

@@ -1,0 +1,29 @@
+﻿@model VegetableShop.Mvc.Models.Categories.UpdateCategoryRequest
+
+@{
+    ViewData["Title"] = "Update";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div>
+    <h3 class="page-header text-center">UPDATE CATEGORY</h3>
+    <hr />
+    <div class="card-body">
+        <form asp-action="Update">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+            <div>
+                <input type="submit" value="Update" class="btn btn-primary" />
+                <a class="btn btn-success" asp-action="Index" asp-controller="Product">Back</a>
+            </div>
+        </form>
+    </div>
+</div>
+

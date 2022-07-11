@@ -8,5 +8,6 @@
         public DateTime DateCreated { set; get; } = DateTime.Now;
         public IFormFile? Image { get; set; }
         public int CategoryId { get; set; }
+        public string Description { get; set; }
     }
 }

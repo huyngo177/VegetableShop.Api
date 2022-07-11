@@ -34,4 +34,8 @@
     <ProjectReference Include="..\VegetableShop.Api\VegetableShop.Api.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\client\" />
+  </ItemGroup>
+
 </Project>

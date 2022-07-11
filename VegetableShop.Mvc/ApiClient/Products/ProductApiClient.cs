@@ -2,6 +2,8 @@
 using Newtonsoft.Json;
 using VegetableShop.Mvc.Models.Products;
 using VegetableShop.Mvc.Models;
+using VegetableShop.Mvc.ApiClient.Categories;
+using VegetableShop.Api.Data.Entities;
 
 namespace VegetableShop.Mvc.ApiClient.Products
 {
@@ -21,6 +23,13 @@ namespace VegetableShop.Mvc.ApiClient.Products
             _client = httpClientFactory.CreateClient();
             _client.BaseAddress = new Uri($"{_configuration["BaseAddress"]}");
             _imagePath = $"{_configuration["BaseAddress"]}";
+        }
+
+        public async Task<CreateProductRequest> GetCategory()
+        {
+            var cate = await _client.GetAsync("api/categories");
+            var data = JsonConvert.DeserializeObject<IEnumerable<Category>>(await cate.Content.ReadAsStringAsync());
+            return new CreateProductRequest() { Categories = data };
         }
 
         public async Task<CreateResponse> CreateAsync(CreateProductRequest request)
@@ -50,19 +59,13 @@ namespace VegetableShop.Mvc.ApiClient.Products
         public async Task<IEnumerable<ProductViewModel>> GetAllAsync()
         {
             var products = await GetAsync<IEnumerable<ProductViewModel>>("api/products");
-            var list = new List<ProductViewModel>();
-            foreach (var product in products)
-            {
-                product.ImagePath = $"{_imagePath}{product.ImagePath}";
-                list.Add(product);
-            }
-            return list;
+            return products;
         }
 
         public async Task<ProductViewModel> GetProductByIdAsync(int id)
         {
             var response = await GetAsync<ProductViewModel>($"api/products/{id}");
-            response.ImagePath = $"{_imagePath}{response.ImagePath}";
+            //response.ImagePath = $"{_imagePath}{response.ImagePath}";
             return response;
         }
 

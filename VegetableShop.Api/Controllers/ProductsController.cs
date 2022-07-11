@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using VegetableShop.Api.Dto.Products;
 using VegetableShop.Api.Services.Products;
 
@@ -6,15 +7,19 @@ namespace VegetableShop.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _productService;
         private readonly IConfiguration _configuration;
+        private readonly string _imagePath;
 
         public ProductsController(IProductService productService, IConfiguration configuration)
         {
             _productService = productService;
             _configuration = configuration;
+            _configuration = configuration;
+            _imagePath = $"{_configuration["BaseAddress"]}";
         }
         [HttpGet]
         public IActionResult GetAll()
@@ -34,6 +39,7 @@ namespace VegetableShop.Api.Controllers
             {
                 return NotFound();
             }
+            product.ImagePath = $"{_imagePath}{product.ImagePath}";
             return Ok(product);
         }
 

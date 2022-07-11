@@ -4,6 +4,14 @@
     background-image: url('https://toigingiuvedep.vn/wp-content/uploads/2021/08/background-anime-truong-hoc.jpg');
 }
 
+.custom-category-background {
+    background-image: url('../client/img/hero/banner.jpg');
+}
+
+.custom-product-detail {
+    background-image: url('../client/img/breadcrumb.jpg');
+}
+
 .custom-mt-5 {
     margin-top: 6rem !important;
 }
@@ -27,7 +35,11 @@
 }
 
 .custom-td {
-    /*display: block;*/
     text-align: center;
     vertical-align: middle;
+}
+
+.flex-container {
+    display: flex;
+    flex-wrap: wrap;
 }

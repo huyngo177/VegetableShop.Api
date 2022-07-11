@@ -37,7 +37,7 @@ builder.Services.AddSession(options =>
 builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<IUserApiClient, UserApiClient>();
 builder.Services.AddScoped<IProductApiClient, ProductApiClient>();
-builder.Services.AddScoped<ICategoryApiClient, CategoryApiClient>();
+builder.Services.AddScoped<IRoleApiClient, RoleApiClient>();
 builder.Services.AddAutoMapper(typeof(UserMapping));
 builder.Services.AddRazorPages();
 

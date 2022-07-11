@@ -18,5 +18,7 @@ namespace VegetableShop.Mvc.Models.Products
         public IFormFile? Image { get; set; }
         [DisplayName("Category")]
         public int CategoryId { get; set; }
+        [Required(ErrorMessage = "Description required")]
+        public string Description { get; set; }
     }
 }

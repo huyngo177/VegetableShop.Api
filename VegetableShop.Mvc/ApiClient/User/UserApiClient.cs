@@ -12,7 +12,7 @@ namespace VegetableShop.Mvc.ApiClient.User
         private readonly IConfiguration _configuration;
         private readonly HttpClient _client;
         private readonly IMapper _mapper;
-        private readonly IWebHostEnvironment _webHostEnvironment;
+        //private readonly IWebHostEnvironment _webHostEnvironment;
         public UserApiClient(IConfiguration configuration, IHttpClientFactory httpClientFactory, IMapper mapper)
             : base(configuration, httpClientFactory, mapper)
         {

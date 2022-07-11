@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace VegetableShop.Mvc.Models
 {
@@ -9,6 +10,7 @@ namespace VegetableShop.Mvc.Models
 
         [Required(ErrorMessage = "Please enter password")]
         public string Password { get; set; }
+        [DisplayName("Remember me")]
         public bool RememberMe { get; set; }
     }
 }

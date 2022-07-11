@@ -36,15 +36,13 @@
                         <span asp-validation-for="Stock" class="text-danger"></span>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-floating mb-3 mb-md-0">
-                        <input asp-for="DateCreated" class="form-control" />
-                        <label asp-for="DateCreated" class="control-label"></label>
-                        <span asp-validation-for="DateCreated" class="text-danger"></span>
-                    </div>
+                @*                <div class="col-md-6">
+                <div class="form-floating mb-3 mb-md-0">
+                <input asp-for="DateCreated" class="form-control" />
+                <label asp-for="DateCreated" class="control-label"></label>
+                <span asp-validation-for="DateCreated" class="text-danger"></span>
                 </div>
-            </div>
-            <div class="row mb-3">
+                </div>*@
                 <div class="col-md-6">
                     <div class="form-floating mb-3 mb-md-0">
                         <input asp-for="Image" type="file" class="form-control" />
@@ -52,16 +50,30 @@
                         <span asp-validation-for="Image" class="text-danger"></span>
                     </div>
                 </div>
+            </div>
+            <div class="row mb-3">
                 <div class="col-md-6">
                     <label asp-for="CategoryId" class="control-label"></label>
-                    <select asp-for="CategoryId" class="form-control" asp-items="new SelectList(ViewBag.Categories)">
-                        <option>--Select--</option>
-                    </select>
+
+                    @*<select asp-for="CategoryId">
+                        @foreach (var item in @Model.Categories)
+                        {
+                            <option value="@item.Id">@item.Name</option>
+                        }
+                    </select>*@
                 </div>
-                <div>
-                    <input type="submit" value="Create" class="btn btn-primary" />
-                    <a class="btn btn-success" asp-action="Index" asp-controller="Product">Back</a>
+            </div>
+            <div class="row mb-3">
+                <div class="form-floating mb-3 mb-md-0">
+                    <input asp-for="Description" class="form-control" />
+                    <label asp-for="Description" class="control-label"></label>
+                    <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
+            </div>
+            <div>
+                <input type="submit" value="Create" class="btn btn-primary" />
+                <a class="btn btn-success" asp-action="Index" asp-controller="Product">Back</a>
+            </div>
         </form>
     </div>
 </div>

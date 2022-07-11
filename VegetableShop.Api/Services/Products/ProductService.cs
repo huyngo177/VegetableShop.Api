@@ -14,13 +14,17 @@ namespace VegetableShop.Api.Services.Products
     {
         private readonly AppDbContext _appDbContext;
         private readonly IStorageService _storageService;
+        private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
         private const string CONTENT_FOLDER_NAME = "Images/Products";
-        public ProductService(AppDbContext appDbContext, IMapper mapper, IStorageService storageService)
+        private readonly string _imagePath;
+        public ProductService(AppDbContext appDbContext, IMapper mapper, IStorageService storageService, IConfiguration configuration)
         {
             _appDbContext = appDbContext;
             _mapper = mapper;
             _storageService = storageService;
+            _configuration = configuration;
+            _imagePath = $"{_configuration["BaseAddress"]}";
         }
 
         public async Task<CreateResponse> CreateAsync(CreateProductDto createProductDto)
@@ -104,6 +108,10 @@ namespace VegetableShop.Api.Services.Products
         {
             var products = _appDbContext.Products.Include(x => x.Category).ToList();
             IEnumerable<ProductDto> result = _mapper.Map<List<Product>, IEnumerable<ProductDto>>(products);
+            foreach (var item in result)
+            {
+                item.ImagePath = $"{_imagePath}{item.ImagePath}";
+            }
             return result;
         }
 

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using VegetableShop.Api.Data.Entities;
 
 namespace VegetableShop.Mvc.Models.Products
 {
@@ -18,5 +19,8 @@ namespace VegetableShop.Mvc.Models.Products
         public IFormFile? Image { get; set; }
         [DisplayName("Category")]
         public int CategoryId { get; set; }
+        public IEnumerable<Category> Categories { get; set; }
+        [Required(ErrorMessage = "Description required")]
+        public string Description { get; set; }
     }
 }

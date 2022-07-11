@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace VegetableShop.Models.Role
+namespace VegetableShop.Mvc.Models.Role
 {
     public class UpdateRoleRequest
     {
