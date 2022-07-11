@@ -7,9 +7,9 @@ namespace VegetableShop.Mvc.Controllers
 {
     public class CategoryController : Controller
     {
-        private readonly IRoleApiClient _categoryApiClient;
+        private readonly ICategoryApiClient _categoryApiClient;
         private readonly IMapper _mapper;
-        public CategoryController(IRoleApiClient categoryApiClient, IMapper mapper)
+        public CategoryController(ICategoryApiClient categoryApiClient, IMapper mapper)
         {
             _categoryApiClient = categoryApiClient;
             _mapper = mapper;

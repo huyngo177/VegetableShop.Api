@@ -151,7 +151,7 @@ namespace VegetableShop.Api.Controllers
             return Ok();
         }
 
-        [HttpPost("revoke")]
+        [HttpGet("revoke")]
         public async Task<IActionResult> RevokeAllAsync()
         {
             await _userService.RevokeAllAsync();

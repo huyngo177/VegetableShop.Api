@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using VegetableShop.Api.Mapper.User;
 using VegetableShop.Mvc.ApiClient.Categories;
 using VegetableShop.Mvc.ApiClient.Products;
+using VegetableShop.Mvc.ApiClient.Role;
 using VegetableShop.Mvc.ApiClient.User;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,6 +39,7 @@ builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<IUserApiClient, UserApiClient>();
 builder.Services.AddScoped<IProductApiClient, ProductApiClient>();
 builder.Services.AddScoped<IRoleApiClient, RoleApiClient>();
+builder.Services.AddScoped<ICategoryApiClient, CategoryApiClient>();
 builder.Services.AddAutoMapper(typeof(UserMapping));
 builder.Services.AddRazorPages();
 

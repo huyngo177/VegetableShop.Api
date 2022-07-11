@@ -11,5 +11,6 @@ namespace VegetableShop.Mvc.ApiClient.User
         Task<CreateResponse> CreateAsync(CreateUserRequest request);
         Task<Response> UpdateAsync(int id, UpdateUserRequest request);
         Task<Response> DeleteAsync(int id);
+        Task RevokeAsync();
     }
 }

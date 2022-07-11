@@ -100,10 +100,17 @@ namespace VegetableShop.Mvc.Controllers
             //        Response.Cookies.Delete(cookie.Key);
             //    }
             //}
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme) ;
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             //localStorage.clear();
             //HttpContext.Session.Clear();
             return RedirectToAction("Index", "Login");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Revoke()
+        {
+            await _userApiClient.RevokeAsync();
+            return View();
         }
     }
 }

@@ -72,5 +72,10 @@ namespace VegetableShop.Mvc.ApiClient.User
             var body = response.Content.ReadAsStringAsync().Result;
             return JsonConvert.DeserializeObject<Response>(body);
         }
+
+        public async Task RevokeAsync()
+        {
+            await _client.GetAsync($"api/users/revoke");
+        }
     }
 }

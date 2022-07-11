@@ -5,8 +5,8 @@ namespace VegetableShop.Mvc.ViewComponents
 {
     public class RenderCategory : ViewComponent
     {
-        private readonly IRoleApiClient _categoryApiClient;
-        public RenderCategory(IRoleApiClient categoryApiClient)
+        private readonly ICategoryApiClient _categoryApiClient;
+        public RenderCategory(ICategoryApiClient categoryApiClient)
         {
             _categoryApiClient = categoryApiClient;
         }

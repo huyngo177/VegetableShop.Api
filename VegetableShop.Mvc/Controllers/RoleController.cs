@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using VegetableShop.Mvc.ApiClient.Categories;
+using VegetableShop.Mvc.ApiClient.Role;
 using VegetableShop.Mvc.Models.Role;
 
 namespace VegetableShop.Mvc.Controllers
