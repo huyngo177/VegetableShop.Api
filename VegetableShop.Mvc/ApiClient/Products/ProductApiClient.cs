@@ -17,12 +17,6 @@ namespace VegetableShop.Mvc.ApiClient.Products
         public ProductApiClient(IConfiguration configuration, IHttpClientFactory httpClientFactory, IMapper mapper)
             : base(configuration, httpClientFactory, mapper)
         {
-            _configuration = configuration;
-            _clientFactory = httpClientFactory;
-            _mapper = mapper;
-            _client = httpClientFactory.CreateClient();
-            _client.BaseAddress = new Uri($"{_configuration["BaseAddress"]}");
-            _imagePath = $"{_configuration["BaseAddress"]}";
         }
 
         public async Task<CreateProductRequest> GetCategory()
@@ -65,7 +59,6 @@ namespace VegetableShop.Mvc.ApiClient.Products
         public async Task<ProductViewModel> GetProductByIdAsync(int id)
         {
             var response = await GetAsync<ProductViewModel>($"api/products/{id}");
-            //response.ImagePath = $"{_imagePath}{response.ImagePath}";
             return response;
         }
 
@@ -78,6 +71,11 @@ namespace VegetableShop.Mvc.ApiClient.Products
             };
             var body = response.Content.ReadAsStringAsync().Result;
             return JsonConvert.DeserializeObject<Response>(body);
+        }
+
+        public async Task<IEnumerable<ProductViewModel>> GetProductByCategoryIdAsync(int id)
+        {
+            return await GetAsync<IEnumerable<ProductViewModel>>($"api/products/categories/{id}");
         }
     }
 }

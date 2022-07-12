@@ -15,11 +15,6 @@ namespace VegetableShop.Mvc.ApiClient.Categories
         public CategoryApiClient(IConfiguration configuration, IHttpClientFactory httpClientFactory, IMapper mapper)
             : base(configuration, httpClientFactory, mapper)
         {
-            _configuration = configuration;
-            _clientFactory = httpClientFactory;
-            _mapper = mapper;
-            _client = httpClientFactory.CreateClient();
-            _client.BaseAddress = new Uri($"{_configuration["BaseAddress"]}");
         }
         public async Task<IEnumerable<CategoryViewModel>> GetAllAsync()
         {

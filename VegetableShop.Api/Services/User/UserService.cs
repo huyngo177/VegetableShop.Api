@@ -105,7 +105,7 @@ namespace VegetableShop.Api.Services.User
             var user = await _userManager.FindByIdAsync(id.ToString());
             if (user is null)
             {
-                throw new AppException(Exceptions.UserNotFound);
+                throw new KeyNotFoundException(Exceptions.UserNotFound);
             }
             var result = await _userManager.DeleteAsync(user);
             if (result.Succeeded)
@@ -134,7 +134,7 @@ namespace VegetableShop.Api.Services.User
             var user = await _userManager.FindByIdAsync(id.ToString());
             if (user is null)
             {
-                throw new AppException(Exceptions.UserNotFound);
+                throw new KeyNotFoundException(Exceptions.UserNotFound);
             }
             return _mapper.Map<AppUserDto>(user);
         }
@@ -144,7 +144,7 @@ namespace VegetableShop.Api.Services.User
             var user = await _userManager.FindByNameAsync(username);
             if (user is null)
             {
-                throw new AppException(Exceptions.UserNotFound);
+                throw new KeyNotFoundException(Exceptions.UserNotFound);
             }
             return _mapper.Map<AppUserDto>(user);
         }
@@ -154,7 +154,7 @@ namespace VegetableShop.Api.Services.User
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
             if (user is null)
             {
-                throw new AppException(Exceptions.EmailNotFound);
+                throw new KeyNotFoundException(Exceptions.EmailNotFound);
             }
             var res = await _userManager.GetLockoutEndDateAsync(user);
             DateTimeOffset? dateTimeOffset = res.HasValue ? res : null;
@@ -215,7 +215,7 @@ namespace VegetableShop.Api.Services.User
             var user = await _userManager.FindByNameAsync(principal.Identity?.Name);
             if (user is null || user.RefreshToken != refreshToken)
             {
-                throw new BadHttpRequestException(Exceptions.InvalidToken);
+                throw new AppException(Exceptions.InvalidToken);
             }
             var newAccessToken = CreateToken(principal.Claims.ToList());
             var newRefreshToken = user.RefreshToken;
@@ -269,7 +269,7 @@ namespace VegetableShop.Api.Services.User
             var user = await _userManager.FindByIdAsync(id.ToString());
             if (user is null)
             {
-                throw new Exception(Exceptions.UserNotFound);
+                throw new KeyNotFoundException(Exceptions.UserNotFound);
             }
             var data = _mapper.Map(updateUserDto, user);
             var init = _appDbContext.Database.CreateExecutionStrategy();
@@ -337,7 +337,7 @@ namespace VegetableShop.Api.Services.User
             if (securityToken is not JwtSecurityToken jwtSecurityToken ||
                 !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
             {
-                throw new SecurityTokenException(Exceptions.InvalidToken);
+                throw new AppException(Exceptions.InvalidToken);
             }
             return principal;
         }

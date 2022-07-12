@@ -11,5 +11,6 @@ namespace VegetableShop.Mvc.ApiClient.Products
         Task<CreateResponse> CreateAsync(CreateProductRequest request);
         Task<Response> UpdateAsync(int id, UpdateProductRequest request);
         Task<Response> DeleteAsync(int id);
+        Task<IEnumerable<ProductViewModel>> GetProductByCategoryIdAsync(int categoryId);
     }
 }

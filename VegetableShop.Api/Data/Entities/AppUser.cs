@@ -6,7 +6,6 @@ namespace VegetableShop.Api.Data.Entities
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string PhoneNumber { get; set; }
         public string Address { get; set; }
         public virtual List<Order> Orders { get; set; }
         public string? RefreshToken { get; set; }

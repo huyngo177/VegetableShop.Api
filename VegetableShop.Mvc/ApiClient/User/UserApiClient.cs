@@ -12,15 +12,14 @@ namespace VegetableShop.Mvc.ApiClient.User
         private readonly IConfiguration _configuration;
         private readonly HttpClient _client;
         private readonly IMapper _mapper;
-        //private readonly IWebHostEnvironment _webHostEnvironment;
         public UserApiClient(IConfiguration configuration, IHttpClientFactory httpClientFactory, IMapper mapper)
             : base(configuration, httpClientFactory, mapper)
         {
             _configuration = configuration;
             _clientFactory = httpClientFactory;
             _mapper = mapper;
-            _client = httpClientFactory.CreateClient();
-            _client.BaseAddress = new Uri($"{configuration["BaseAddress"]}");
+            _client = _clientFactory.CreateClient();
+            _client.BaseAddress = new Uri($"{_configuration["BaseAddress"]}");
         }
 
         public async Task<IEnumerable<UserViewModel>> GetAllAsync()

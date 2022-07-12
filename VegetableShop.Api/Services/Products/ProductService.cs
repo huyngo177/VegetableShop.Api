@@ -176,5 +176,17 @@ namespace VegetableShop.Api.Services.Products
         {
             return await _storageService.DeleteFilePathAsync(filePath);
         }
+
+        public async Task<IEnumerable<ProductDto>> GetProductByCategoryIdAsync(int categoryId)
+        {
+            var cate = await _appDbContext.Categories.FirstOrDefaultAsync(x => x.Id == categoryId);
+            var productDtos = new List<ProductDto>();
+            foreach (var item in cate.Products)
+            {
+                item.ImagePath = $"{_imagePath}{item.ImagePath}";
+                productDtos.Add(_mapper.Map<ProductDto>(item));
+            }
+            return productDtos;
+        }
     }
 }

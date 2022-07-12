@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using VegetableShop.Api.Mapper.User;
+using VegetableShop.Mvc.ApiClient.Carts;
 using VegetableShop.Mvc.ApiClient.Categories;
 using VegetableShop.Mvc.ApiClient.Products;
 using VegetableShop.Mvc.ApiClient.Role;
@@ -19,8 +20,6 @@ builder.Services.AddHttpClient();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Login/Index";
-        //options.LogoutPath = "/User/Logout";
         options.AccessDeniedPath = "/User/Forbidden/";
     });
 
@@ -35,11 +34,12 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromMinutes(30);
 });
 
-builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserApiClient, UserApiClient>();
 builder.Services.AddScoped<IProductApiClient, ProductApiClient>();
 builder.Services.AddScoped<IRoleApiClient, RoleApiClient>();
 builder.Services.AddScoped<ICategoryApiClient, CategoryApiClient>();
+builder.Services.AddScoped<ICartApiClient, CartApiClient>();
 builder.Services.AddAutoMapper(typeof(UserMapping));
 builder.Services.AddRazorPages();
 
@@ -67,7 +67,7 @@ app.UseMvc();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=UserHome}/{action=Index}/{id?}");
 
 app.UseCors("_allowSpecificOrigins");
 app.Run();

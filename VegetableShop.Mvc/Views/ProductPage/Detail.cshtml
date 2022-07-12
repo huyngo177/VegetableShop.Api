@@ -40,7 +40,7 @@
                             </div>
                         </div>
                     </div>
-                    <a href="#" class="primary-btn">ADD TO CARD</a>
+                    <a asp-action="Index" asp-controller="Cart" asp-route-id="@Model.Product.Id" class="primary-btn">ADD TO CARD</a>
                     <a asp-action="Index" asp-controller="UserHome" class="primary-btn">BACK</a>
                     <ul>
                         <li><b>Category:</b> <span>@Model.Product.CategoryName</span></li>

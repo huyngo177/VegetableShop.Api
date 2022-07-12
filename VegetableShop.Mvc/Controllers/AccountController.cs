@@ -1,35 +1,35 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using VegetableShop.Mvc.ApiClient.User;
 using VegetableShop.Mvc.Models;
+using VegetableShop.Mvc.Models.User;
 
 namespace VegetableShop.Mvc.Controllers
 {
-    public class LoginController : Controller
+    public class AccountController : Controller
     {
         private readonly IUserApiClient _userApiClient;
         private readonly IConfiguration _configuration;
-        public LoginController(IUserApiClient userApiClient, IConfiguration configuration)
+        public AccountController(IUserApiClient userApiClient, IConfiguration configuration)
         {
             _userApiClient = userApiClient;
             _configuration = configuration;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Login()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(LoginRequest request)
+        public async Task<IActionResult> Login(LoginRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -47,14 +47,46 @@ namespace VegetableShop.Mvc.Controllers
                 IsPersistent = true
             };
             var userPrincipal = ValidateToken(result.Token);
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.NameIdentifier,id)
+            };
+
+            ClaimsPrincipal principal = new ClaimsPrincipal(new ClaimsIdentity[] { new ClaimsIdentity(claims) });
 
             HttpContext.Session.SetString("Token", result.Token);
             await HttpContext.SignInAsync(
                         CookieAuthenticationDefaults.AuthenticationScheme,
                         userPrincipal,
                         authProperties);
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "UserHome");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Login", "Account");
+        }
+
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(CreateUserRequest request)
+        {
+            var response = await _userApiClient.CreateAsync(request);
+            if (response.IsSuccess)
+            {
+                return RedirectToAction("Login");
+            }
+            return View(request);
+        }
+
         private ClaimsPrincipal ValidateToken(string jwtToken)
         {
             SecurityToken validatedToken;

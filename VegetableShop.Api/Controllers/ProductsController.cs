@@ -82,5 +82,16 @@ namespace VegetableShop.Api.Controllers
             }
             return BadRequest();
         }
+
+        [HttpGet("categories/{categoryId}")]
+        public async Task<IActionResult> GetProductByCategoryIdAsync(int categoryId)
+        {
+            var products = await _productService.GetProductByCategoryIdAsync(categoryId);
+            if (products is not null)
+            {
+                return Ok(products);
+            }
+            return BadRequest();
+        }
     }
 }

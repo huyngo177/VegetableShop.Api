@@ -10,5 +10,6 @@ namespace VegetableShop.Api.Services.Products
         Task<CreateResponse> CreateAsync(CreateProductDto createProductDto);
         Task<bool> UpdateAsync(int id, UpdateProductDto updateProductDto);
         Task<bool> DeLeteAsync(int id);
+        Task<IEnumerable<ProductDto>> GetProductByCategoryIdAsync(int categoryId);
     }
 }
