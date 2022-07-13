@@ -23,5 +23,6 @@
         public const string CategoryNotFound = "Category not found";
         public const string CategoryNameNotExist = "Category name not exist";
         public const string CategoryNameExist = "Category name exist";
+        public const string OrderNotFound = "Order not found";
     }
 }

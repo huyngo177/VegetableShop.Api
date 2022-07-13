@@ -56,10 +56,11 @@ namespace VegetableShop.Mvc.ApiClient.Carts
             {
                 ProductId = id,
                 Description = product.Description,
-                Image = $"{_imagePath}{product.ImagePath}",
+                Image = product.ImagePath,
                 Name = product.Name,
                 Price = product.Price,
-                Quantity = quantity
+                Quantity = quantity,
+                Stock = product.Stock,
             };
 
             currentCart.Add(cartItem);
@@ -108,7 +109,6 @@ namespace VegetableShop.Mvc.ApiClient.Carts
             return true;
         }
 
-
         public CheckoutViewModel GetCheckoutViewModel()
         {
             var session = context.HttpContext.Session.GetString("CartSession");
@@ -125,10 +125,28 @@ namespace VegetableShop.Mvc.ApiClient.Carts
             return checkoutVm;
         }
 
-        public bool RemoveCart()
+        public void RemoveCart()
         {
             context.HttpContext.Session.Remove("CartSession");
-            return true;
+        }
+        public List<CartItemViewModel> RemoveItemInCart(int id)
+        {
+            var session = context.HttpContext.Session.GetString("CartSession");
+            List<CartItemViewModel> currentCart = new List<CartItemViewModel>();
+            if (session != null)
+            {
+                currentCart = JsonConvert.DeserializeObject<List<CartItemViewModel>>(session);
+            }
+            foreach (var item in currentCart)
+            {
+                if (item.ProductId == id)
+                {
+                    currentCart.Remove(item);
+                    break;
+                }
+            }
+            context.HttpContext.Session.SetString("CartSession", JsonConvert.SerializeObject(currentCart));
+            return currentCart;
         }
     }
 }

@@ -9,6 +9,7 @@ namespace VegetableShop.Mvc.ApiClient.Carts
         IEnumerable<CartItemViewModel> UpdateCart(int id, int quantity);
         Task<bool> Checkout(CheckoutViewModel checkoutViewModel);
         CheckoutViewModel GetCheckoutViewModel();
-        bool RemoveCart();
+        void RemoveCart();
+        List<CartItemViewModel> RemoveItemInCart(int id);
     }
 }

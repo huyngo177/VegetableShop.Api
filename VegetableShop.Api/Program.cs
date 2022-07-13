@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json.Serialization;
 using VegetableShop.Api.Common;
 using VegetableShop.Api.Data.EF;
 using VegetableShop.Api.Data.Entities;
@@ -16,6 +17,7 @@ using VegetableShop.Api.Mapper.Role;
 using VegetableShop.Api.Mapper.User;
 using VegetableShop.Api.Models.Validations.User;
 using VegetableShop.Api.Services.Categories;
+using VegetableShop.Api.Services.Orders;
 using VegetableShop.Api.Services.Products;
 using VegetableShop.Api.Services.Role;
 using VegetableShop.Api.Services.Storage;
@@ -42,6 +44,7 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IStorageService, StorageService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<UserManager<AppUser>>();
 builder.Services.AddScoped<SignInManager<AppUser>>();
 builder.Services.AddScoped<RoleManager<AppRole>>();
@@ -56,6 +59,9 @@ builder.Services.AddAutoMapper(typeof(RoleMapping));
 builder.Services.AddControllers()
                 .AddFluentValidation(opts =>
                     opts.RegisterValidatorsFromAssembly(typeof(CreateAppUserValidator).Assembly)
+                )
+                .AddJsonOptions(
+                    x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles
                 );
 
 //Configure Identity

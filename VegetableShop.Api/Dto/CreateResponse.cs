@@ -1,4 +1,5 @@
 ﻿using VegetableShop.Api.Dto.Category;
+using VegetableShop.Api.Dto.Orders;
 using VegetableShop.Api.Dto.Products;
 using VegetableShop.Api.Dto.Role;
 using VegetableShop.Api.Dto.User;
@@ -11,6 +12,8 @@ namespace VegetableShop.Api.Dto
         public AppRoleDto appRoleDto { get; set; }
         public ProductDto productDto { get; set; }
         public CategoryDto categoryDto { get; set; }
+        public OrderDto orderDto { get; set; }
+
         public CreateResponse(AppUserDto userDto, string msg)
         {
             IsSuccess = true;
@@ -36,6 +39,13 @@ namespace VegetableShop.Api.Dto
         {
             IsSuccess = true;
             this.categoryDto = categoryDto;
+            Message = msg;
+        }
+
+        public CreateResponse(OrderDto orderDto, string msg)
+        {
+            IsSuccess = true;
+            this.orderDto = orderDto;
             Message = msg;
         }
 

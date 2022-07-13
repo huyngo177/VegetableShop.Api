@@ -8,3 +8,4 @@
         public virtual AppUser AppUser { get; set; }
     }
 }
+

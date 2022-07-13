@@ -15,8 +15,8 @@ namespace VegetableShop.Api.Models.Validations.User
             RuleFor(x => x.UserName)
                 .NotEmpty()
                 .WithMessage("Username required")
-                .Length(6, 20)
-                .WithMessage("Username must greater than 6 characters and less than 20 characters");
+                .Length(5, 20)
+                .WithMessage("Username must greater than 5 characters and less than 20 characters");
 
             RuleFor(x => x.Password)
                 .NotEmpty()

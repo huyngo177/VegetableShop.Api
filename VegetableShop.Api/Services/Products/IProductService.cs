@@ -11,5 +11,6 @@ namespace VegetableShop.Api.Services.Products
         Task<bool> UpdateAsync(int id, UpdateProductDto updateProductDto);
         Task<bool> DeLeteAsync(int id);
         Task<IEnumerable<ProductDto>> GetProductByCategoryIdAsync(int categoryId);
+        Task<bool> UpdateStock(int id, int quantity);
     }
 }

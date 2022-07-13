@@ -49,6 +49,10 @@ namespace VegetableShop.Api.Services.Products
             }
             var product = _mapper.Map<Product>(createProductDto);
             product.DateUpdated = null;
+            if (product.Stock == 0)
+            {
+                product.Status = "Unavailable";
+            }
             var init = _appDbContext.Database.CreateExecutionStrategy();
             await init.ExecuteAsync(async () =>
             {
@@ -187,6 +191,19 @@ namespace VegetableShop.Api.Services.Products
                 productDtos.Add(_mapper.Map<ProductDto>(item));
             }
             return productDtos;
+        }
+
+        public async Task<bool> UpdateStock(int id, int quantity)
+        {
+            var product = await _appDbContext.Products.FirstOrDefaultAsync(x => x.Id == id);
+            if (product is null)
+            {
+                throw new AppException(Exceptions.ProductNotFound);
+            }
+            product.Stock -= quantity;
+            _appDbContext.Products.Update(product);
+            await _appDbContext.SaveChangesAsync();
+            return true;
         }
     }
 }

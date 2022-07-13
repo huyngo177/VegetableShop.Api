@@ -13,8 +13,8 @@
                 <div class="featured__item__pic">
                     <img src="@item.ImagePath">
                     <ul class="featured__item__pic__hover">
-                        <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                    </ul>
+@*                        <li><a asp-action="AddToCart" asp-route-id="@item.Id" asp-controller="Cart"><i class="fa fa-shopping-cart"></i></a></li>
+*@                    </ul>
                 </div>
                 <div class="featured__item__text">
                     <h6><a asp-action="Detail" asp-controller="ProductPage" asp-route-id="@item.Id">@item.Name</a></h6>

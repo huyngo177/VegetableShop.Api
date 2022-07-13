@@ -22,8 +22,8 @@ namespace VegetableShop.Api.Models.Validations.Product
                 .NotEmpty()
                 .NotNull()
                 .WithMessage("Price required")
-                .GreaterThan(0)
-                .WithMessage("Stock must greater than 0");
+                .GreaterThan(-1)
+                .WithMessage("Stock cannot less than 0");
             RuleFor(p => p.Description)
                .NotEmpty()
                .NotNull()

@@ -19,21 +19,16 @@ namespace VegetableShop.Mvc.Controllers
         public IActionResult Index()
         {
             var item = _cartApiClient.GetListItem();
-            var temp = item.Count();
-            if (temp == 0)
-            {
-                return RedirectToAction("AddToCart");
-            }
             return View(new CheckoutViewModel()
             {
                 CartItems = item
             });
         }
 
-        public async Task<IActionResult> AddToCart(int id, int quantity)
+        public async Task<IActionResult> AddToCart(int id, int quantity = 1)
         {
             var item = await _cartApiClient.AddToCart(id, quantity);
-            return RedirectToAction("Index",new CheckoutViewModel()
+            return RedirectToAction("Index", new CheckoutViewModel()
             {
                 CartItems = item
             });
@@ -55,6 +50,23 @@ namespace VegetableShop.Mvc.Controllers
         {
             var cart = _cartApiClient.UpdateCart(id, quantity);
             return View("Index");
+        }
+
+        public IActionResult RemoveItem(int id)
+        {
+            var cart = _cartApiClient.RemoveItemInCart(id);
+            var count = cart.Count();
+            if (count != 0)
+            {
+                return RedirectToAction("Index");
+            }
+            return RedirectToAction("Index", "UserHome");
+        }
+
+        public IActionResult RemoveCart()
+        {
+            _cartApiClient.RemoveCart();
+            return RedirectToAction("Index", "UserHome");
         }
     }
 }
