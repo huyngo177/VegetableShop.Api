@@ -1,8 +1,8 @@
 ﻿using VegetableShop.Api.Data.Entities;
 
-namespace VegetableShop.Api.Dto.Orders
+namespace VegetableShop.Mvc.Models.Orders
 {
-    public class OrderDto
+    public class OrderViewModel
     {
         public int Id { get; set; }
         public string FullName { get; set; }

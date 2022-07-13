@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using VegetableShop.Api.Dto.Page;
 using VegetableShop.Api.Dto.User;
 using VegetableShop.Api.Services.User;
 
@@ -30,10 +31,10 @@ namespace VegetableShop.Api.Controllers
             return Ok(result);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAsync()
+        [HttpGet("page")]
+        public async Task<IActionResult> GetAsync([FromQuery] GetUserPageRequest request)
         {
-            return Ok(await _userService.GetAsync());
+            return Ok(await _userService.GetAsync(request));
         }
 
         [HttpGet("{id}")]

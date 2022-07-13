@@ -1,11 +1,12 @@
 ﻿using VegetableShop.Api.Dto;
+using VegetableShop.Api.Dto.Page;
 using VegetableShop.Api.Dto.User;
 
 namespace VegetableShop.Api.Services.User
 {
     public interface IUserService
     {
-        Task<IList<AppUserDto>> GetAsync();
+        Task<PageResult<AppUserDto>> GetAsync(GetUserPageRequest request);
         Task<AppUserDto> GetUserByIdAsync(int id);
         Task<AppUserDto> GetUserByNameAsync(string username);
         Task<CreateResponse> CreateAsync(CreateUserDto createUserDto);

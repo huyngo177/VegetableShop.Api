@@ -13,8 +13,9 @@ namespace VegetableShop.Api.Mapper.Orders
             CreateMap<Order, OrderDto>();
             CreateMap<OrderDetail, OrderDetailDto>();
             CreateMap<CreateOrderDto, AppUser>();
-            CreateMap<CreateOrderDto, Product>();
             CreateMap<CreateOrderDto, OrderDto>();
+            CreateMap<AppUser, OrderDto>();
+            CreateMap<OrderDetailDto, OrderDetail>();
         }
     }
 }

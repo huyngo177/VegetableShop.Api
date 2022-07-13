@@ -7,12 +7,6 @@ namespace VegetableShop.Api.Models.Validations.Order
     {
         public CreateOrderValidator()
         {
-            RuleFor(p => p.UserName)
-                .NotEmpty()
-                .WithMessage("Username required")
-                .Length(5, 20)
-                .WithMessage("Username must greater than 5 characters and less than 20 characters");
-
             RuleFor(x => x.FirstName)
                 .NotEmpty()
                 .WithMessage("Firstname required")

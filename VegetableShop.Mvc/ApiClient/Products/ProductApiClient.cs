@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using Newtonsoft.Json;
-using VegetableShop.Mvc.Models.Products;
 using VegetableShop.Mvc.Models;
-using VegetableShop.Mvc.ApiClient.Categories;
-using VegetableShop.Api.Data.Entities;
+using VegetableShop.Mvc.Models.Products;
 
 namespace VegetableShop.Mvc.ApiClient.Products
 {
@@ -13,17 +11,15 @@ namespace VegetableShop.Mvc.ApiClient.Products
         private readonly IConfiguration _configuration;
         private readonly HttpClient _client;
         private readonly IMapper _mapper;
-        private readonly string _imagePath;
+
         public ProductApiClient(IConfiguration configuration, IHttpClientFactory httpClientFactory, IMapper mapper)
             : base(configuration, httpClientFactory, mapper)
         {
-        }
-
-        public async Task<CreateProductRequest> GetCategory()
-        {
-            var cate = await _client.GetAsync("api/categories");
-            var data = JsonConvert.DeserializeObject<IEnumerable<Category>>(await cate.Content.ReadAsStringAsync());
-            return new CreateProductRequest() { Categories = data };
+            _configuration = configuration;
+            _clientFactory = httpClientFactory;
+            _mapper = mapper;
+            _client = _clientFactory.CreateClient();
+            _client.BaseAddress = new Uri($"{_configuration["BaseAddress"]}");
         }
 
         public async Task<CreateResponse> CreateAsync(CreateProductRequest request)
@@ -58,8 +54,8 @@ namespace VegetableShop.Mvc.ApiClient.Products
 
         public async Task<ProductViewModel> GetProductByIdAsync(int id)
         {
-            var response = await GetAsync<ProductViewModel>($"api/products/{id}");
-            return response;
+            var product = await GetAsync<ProductViewModel>($"api/products/{id}");
+            return product;
         }
 
         public async Task<Response> UpdateAsync(int id, UpdateProductRequest request)

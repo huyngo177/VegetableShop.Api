@@ -18,9 +18,7 @@ namespace VegetableShop.Mvc.Models.Products
         public DateTime DateCreated { set; get; } = DateTime.Now;
         public IFormFile? Image { get; set; }
         [DisplayName("Category")]
-        public int CategoryId { get; set; }
-        public IEnumerable<Category> Categories { get; set; }
-        [Required(ErrorMessage = "Description required")]
-        public string Description { get; set; }
+        public int? CategoryId { get; set; }
+        public string? Description { get; set; }
     }
 }

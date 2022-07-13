@@ -9,7 +9,6 @@ namespace VegetableShop.Mvc.ApiClient.Carts
     {
         private readonly IHttpClientFactory _clientFactory;
         private readonly IConfiguration _configuration;
-        private readonly HttpClient _client;
         private readonly IMapper _mapper;
         private readonly string _imagePath;
         private readonly IProductApiClient _productApiClient;
@@ -21,7 +20,6 @@ namespace VegetableShop.Mvc.ApiClient.Carts
             _configuration = configuration;
             _clientFactory = httpClientFactory;
             _mapper = mapper;
-
             _imagePath = $"{_configuration["BaseAddress"]}";
             _productApiClient = productApiClient;
             this.context = context;

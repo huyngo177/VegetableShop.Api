@@ -2,7 +2,8 @@
 {
     public class OrderDetail : BaseEntity
     {
-        public decimal TotalPrice { set; get; }
+        public int Quantity { get; set; }
+        public decimal SupTotal { set; get; }
         public int OrderId { set; get; }
         public virtual Order Order { get; set; }
         public virtual Product Products { get; set; }

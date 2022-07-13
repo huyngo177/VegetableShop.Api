@@ -31,8 +31,7 @@ namespace VegetableShop.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var cate = await _productApiClient.GetCategory();
-            return View(cate);
+            return View();
         }
 
         [HttpPost]

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Newtonsoft.Json;
+using VegetableShop.Api.Dto.Page;
 using VegetableShop.Api.Dto.User;
 using VegetableShop.Mvc.Models;
 using VegetableShop.Mvc.Models.User;
@@ -22,9 +23,10 @@ namespace VegetableShop.Mvc.ApiClient.User
             _client.BaseAddress = new Uri($"{_configuration["BaseAddress"]}");
         }
 
-        public async Task<IEnumerable<UserViewModel>> GetAllAsync()
+        public async Task<PageResult<UserViewModel>> GetAllAsync(GetUserPageRequest request)
         {
-            return await GetAsync<IEnumerable<UserViewModel>>("api/users");
+            return await GetAsync<PageResult<UserViewModel>>("api/users/page?pageIndex=" +
+                $"{request.PageIndex}&pageSize={request.PageSize}&keyword={request.Keyword}");
         }
 
         public async Task<UserViewModel> GetUserByIdAsync(int id)

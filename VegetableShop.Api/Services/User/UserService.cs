@@ -10,6 +10,7 @@ using VegetableShop.Api.Common;
 using VegetableShop.Api.Data.EF;
 using VegetableShop.Api.Data.Entities;
 using VegetableShop.Api.Dto;
+using VegetableShop.Api.Dto.Page;
 using VegetableShop.Api.Dto.User;
 
 namespace VegetableShop.Api.Services.User
@@ -115,18 +116,37 @@ namespace VegetableShop.Api.Services.User
             return false;
         }
 
-        public async Task<IList<AppUserDto>> GetAsync()
+        public async Task<PageResult<AppUserDto>> GetAsync(GetUserPageRequest request)
         {
-            var users = await _userManager.Users.ToListAsync();
+            var query = _userManager.Users;
+            if (!string.IsNullOrEmpty(request.Keyword))
+            {
+                query = query.Where(x => x.UserName.Contains(request.Keyword)
+                 || x.PhoneNumber.Contains(request.Keyword));
+            }
+
+            int totalRow = await query.CountAsync();
+
+            var data = await query.Skip((request.PageIndex - 1) * request.PageSize)
+               .Take(request.PageSize)
+               .ToListAsync();
             var result = new List<AppUserDto>();
-            foreach (var user in users)
+            foreach (var user in data)
             {
                 var roles = await _userManager.GetRolesAsync(user);
                 var userDto = _mapper.Map<AppUserDto>(user);
                 userDto.Roles = roles;
                 result.Add(userDto);
             }
-            return result;
+
+            var pageResult = new PageResult<AppUserDto>()
+            {
+                TotalRecords = totalRow,
+                PageIndex = request.PageIndex,
+                PageSize = request.PageSize,
+                Items = result
+            };
+            return pageResult;
         }
 
         public async Task<AppUserDto> GetUserByIdAsync(int id)
