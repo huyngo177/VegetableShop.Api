@@ -28,7 +28,7 @@ namespace VegetableShop.Mvc.Controllers
         public async Task<IActionResult> AddToCart(int id, int quantity = 1)
         {
             var item = await _cartApiClient.AddToCart(id, quantity);
-            return RedirectToAction("Index", new CheckoutViewModel()
+            return RedirectToAction("Index","Cart", new CheckoutViewModel()
             {
                 CartItems = item
             });
@@ -41,9 +41,14 @@ namespace VegetableShop.Mvc.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CheckOut(CheckoutViewModel checkoutViewModel)
+        public async Task<IActionResult> CheckOut(UserInfoRequest userInfoRequest)
         {
-            return RedirectToAction("Index", "UserHome");
+            var result = await _cartApiClient.Checkout(userInfoRequest);
+            if(result.IsSuccess)
+            {
+                return RedirectToAction("Index", "UserHome");
+            }
+            return View(_cartApiClient.GetCheckoutViewModel());
         }
 
         public IActionResult UpdateCart(int id, int quantity)

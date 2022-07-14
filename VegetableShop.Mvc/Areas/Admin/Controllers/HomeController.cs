@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using VegetableShop.Mvc.Models;
 
-namespace VegetableShop.Mvc.Controllers
+namespace VegetableShop.Mvc.Areas.Admin.Controllers
 {
     [Authorize]
     public class HomeController : Controller

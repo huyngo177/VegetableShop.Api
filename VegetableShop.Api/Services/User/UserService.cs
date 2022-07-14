@@ -65,6 +65,7 @@ namespace VegetableShop.Api.Services.User
                 throw new AppException(errors);
             }
             var user = _mapper.Map<AppUser>(createUserDto);
+            user.IsLocked = false;
             var userDto = new AppUserDto();
             var init = _appDbContext.Database.CreateExecutionStrategy();
             async Task<CreateResponse> Values()
@@ -118,7 +119,7 @@ namespace VegetableShop.Api.Services.User
 
         public async Task<PageResult<AppUserDto>> GetAsync(GetUserPageRequest request)
         {
-            var query = _userManager.Users;
+            var query = _userManager.Users.Where(x => x.IsLocked == false);
             if (!string.IsNullOrEmpty(request.Keyword))
             {
                 query = query.Where(x => x.UserName.Contains(request.Keyword)
@@ -176,6 +177,10 @@ namespace VegetableShop.Api.Services.User
             {
                 throw new KeyNotFoundException(Exceptions.EmailNotFound);
             }
+            if (user.IsLocked)
+            {
+                throw new AppException(Exceptions.UserNotExist);
+            }
             var res = await _userManager.GetLockoutEndDateAsync(user);
             DateTimeOffset? dateTimeOffset = res.HasValue ? res : null;
             if (dateTimeOffset != null)
@@ -187,7 +192,8 @@ namespace VegetableShop.Api.Services.User
                 }
             }
             var roles = await _userManager.GetRolesAsync(user);
-            var result = await _signInManager.PasswordSignInAsync(user, loginDto.Password, loginDto.RememberMe, true);
+            //var result = await _signInManager.PasswordSignInAsync(user, loginDto.Password, loginDto.RememberMe, true);
+            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
             if (!result.Succeeded)
             {
                 throw new AppException(Exceptions.LoginFail);
@@ -215,7 +221,8 @@ namespace VegetableShop.Api.Services.User
                 IsSuccess = true,
                 Message = Messages.LoginSuccess,
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
-                RefreshToken = refreshToken
+                RefreshToken = refreshToken,
+                UserId = user.Id
             };
         }
 
@@ -291,7 +298,7 @@ namespace VegetableShop.Api.Services.User
             {
                 throw new KeyNotFoundException(Exceptions.UserNotFound);
             }
-            var data = _mapper.Map(updateUserDto, user);
+            _mapper.Map(updateUserDto, user);
             var init = _appDbContext.Database.CreateExecutionStrategy();
             async Task<bool> Values()
             {
@@ -299,7 +306,7 @@ namespace VegetableShop.Api.Services.User
                 try
                 {
                     await _userManager.ChangePasswordAsync(user, updateUserDto.CurrentPassword, updateUserDto.NewPassword);
-                    var res = await _userManager.UpdateAsync(data);
+                    var res = await _userManager.UpdateAsync(user);
                     if (res.Succeeded)
                     {
                         await trans.CommitAsync();
@@ -360,6 +367,22 @@ namespace VegetableShop.Api.Services.User
                 throw new AppException(Exceptions.InvalidToken);
             }
             return principal;
+        }
+
+        public async Task<bool> ChangeLockedStatusAsync(int id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user is null)
+            {
+                throw new AppException(Exceptions.UserNotFound);
+            }
+            user.IsLocked = true;
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

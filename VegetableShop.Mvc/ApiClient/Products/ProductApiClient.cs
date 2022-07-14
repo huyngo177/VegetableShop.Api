@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Newtonsoft.Json;
+using VegetableShop.Api.Dto.Page;
 using VegetableShop.Mvc.Models;
 using VegetableShop.Mvc.Models.Products;
 
@@ -24,7 +25,24 @@ namespace VegetableShop.Mvc.ApiClient.Products
 
         public async Task<CreateResponse> CreateAsync(CreateProductRequest request)
         {
-            var response = await _client.PostAsync("api/products", HandleRequest(request));
+            var requestContent = new MultipartFormDataContent();
+            if (request.Image is not null)
+            {
+                byte[] data;
+                using (var br = new BinaryReader(request.Image.OpenReadStream()))
+                {
+                    data = br.ReadBytes((int)request.Image.OpenReadStream().Length);
+                }
+                ByteArrayContent bytes = new ByteArrayContent(data);
+                requestContent.Add(bytes, "Image", request.Image.FileName);
+            }
+            requestContent.Add(new StringContent(request.Price.ToString()), "price");
+            requestContent.Add(new StringContent(request.Stock.ToString()), "stock");
+            requestContent.Add(new StringContent(string.IsNullOrEmpty(request.Name) ? "" : request.Name.ToString()), "name");
+            requestContent.Add(new StringContent(string.IsNullOrEmpty(request.Description) ? "" : request.Description.ToString()), "description");
+            requestContent.Add(new StringContent(request.CategoryId.ToString()), "categoryId");
+
+            var response = await _client.PostAsync("api/products", requestContent);
             if (response.IsSuccessStatusCode)
             {
                 var data = await response.Content.ReadAsStringAsync();
@@ -46,9 +64,10 @@ namespace VegetableShop.Mvc.ApiClient.Products
             return JsonConvert.DeserializeObject<Response>(body);
         }
 
-        public async Task<IEnumerable<ProductViewModel>> GetAllAsync()
+        public async Task<PageResult<ProductViewModel>> GetAllAsync(GetProductPageRequest request)
         {
-            var products = await GetAsync<IEnumerable<ProductViewModel>>("api/products");
+            var products = await GetAsync<PageResult<ProductViewModel>>(
+                $"api/products/page?pageIndex={request.PageIndex}&pageSize={request.PageSize} &keyword={request.Keyword}&categoryId={request.CategoryId}");
             return products;
         }
 

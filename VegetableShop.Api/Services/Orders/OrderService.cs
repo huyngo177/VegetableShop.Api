@@ -25,7 +25,7 @@ namespace VegetableShop.Api.Services.Orders
             _productService = productService;
         }
 
-        public async Task<CreateResponse> CreateAsync(CreateOrderDto createOrderDto)
+        public CreateResponse CreateAsync(CreateOrderDto createOrderDto)
         {
             if (createOrderDto is null)
             {
@@ -251,6 +251,10 @@ namespace VegetableShop.Api.Services.Orders
                         foreach (var record in result.OrderDetails)
                         {
                             product.Stock = product.Stock + record.Quantity - item.Quantity;
+                        }
+                        if (product.Stock == 0)
+                        {
+                            product.Status = "Unavailable";
                         }
                         product.OrderDetail = orderDetail;
                         _appDbContext.Products.Update(product);

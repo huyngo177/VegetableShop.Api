@@ -7,6 +7,7 @@ using VegetableShop.Api.Data.Entities;
 using VegetableShop.Api.Common;
 using System.Net.Http.Headers;
 using VegetableShop.Api.Services.Storage;
+using VegetableShop.Api.Dto.Page;
 
 namespace VegetableShop.Api.Services.Products
 {
@@ -108,15 +109,46 @@ namespace VegetableShop.Api.Services.Products
             return true;
         }
 
-        public IEnumerable<ProductDto> GetAll()
+        public async Task<PageResult<ProductDto>> GetAllAsync(GetProductPageRequest request)
         {
-            var products = _appDbContext.Products.Include(x => x.Category).ToList();
-            IEnumerable<ProductDto> result = _mapper.Map<List<Product>, IEnumerable<ProductDto>>(products);
-            foreach (var item in result)
+            var query = from pro in _appDbContext.Products
+                        join cate in _appDbContext.Categories on pro.CategoryId equals cate.Id
+                        where pro.Status == "Available"
+                        select new { pro, cate.Name };
+            if (!string.IsNullOrEmpty(request.Keyword))
             {
-                item.ImagePath = $"{_imagePath}{item.ImagePath}";
+                query = query.Where(x => x.Name.Contains(request.Keyword));
             }
-            return result;
+            if (request.CategoryId != null && request.CategoryId != 0)
+            {
+                query = query.Where(p => p.pro.CategoryId == request.CategoryId);
+            }
+            int totalRow = await query.CountAsync();
+
+            var data = await query.Skip((request.PageIndex - 1) * request.PageSize)
+               .Take(request.PageSize)
+               .Select(x => new ProductDto()
+               {
+                   Id = x.pro.Id,
+                   Name = x.pro.Name,
+                   Stock = x.pro.Stock,
+                   Price = x.pro.Price,
+                   DateCreated = x.pro.DateCreated,
+                   DateUpdated = x.pro.DateUpdated,
+                   ImagePath = $"{_imagePath}{x.pro.ImagePath}",
+                   CategoryName = x.Name,
+                   Status = x.pro.Status,
+                   Description = x.pro.Description
+               })
+               .ToListAsync();
+            var pageResult = new PageResult<ProductDto>()
+            {
+                TotalRecords = totalRow,
+                PageSize = request.PageSize,
+                PageIndex = request.PageIndex,
+                Items = data
+            };
+            return pageResult;
         }
 
         public async Task<ProductDto> GetProductByIdAsync(int id)
@@ -181,17 +213,19 @@ namespace VegetableShop.Api.Services.Products
             return await _storageService.DeleteFilePathAsync(filePath);
         }
 
-        public async Task<IEnumerable<ProductDto>> GetProductByCategoryIdAsync(int categoryId)
-        {
-            var cate = await _appDbContext.Categories.FirstOrDefaultAsync(x => x.Id == categoryId);
-            var productDtos = new List<ProductDto>();
-            foreach (var item in cate.Products)
-            {
-                item.ImagePath = $"{_imagePath}{item.ImagePath}";
-                productDtos.Add(_mapper.Map<ProductDto>(item));
-            }
-            return productDtos;
-        }
+        //public async Task<PageResult<ProductDto>> GetProductByCategoryIdAsync(GetProductPageRequest request)
+        //{
+        //    var query = from pro in _appDbContext.Products
+        //                join cate in _appDbContext.Categories on pro.CategoryId equals cate.Id
+        //    var cate = await _appDbContext.Categories.FirstOrDefaultAsync(x => x.Id == categoryId);
+        //    var productDtos = new List<ProductDto>();
+        //    foreach (var item in cate.Products)
+        //    {
+        //        item.ImagePath = $"{_imagePath}{item.ImagePath}";
+        //        productDtos.Add(_mapper.Map<ProductDto>(item));
+        //    }
+        //    return productDtos;
+        //}
 
         public async Task<bool> UpdateStock(int id, int quantity)
         {
@@ -201,6 +235,19 @@ namespace VegetableShop.Api.Services.Products
                 throw new AppException(Exceptions.ProductNotFound);
             }
             product.Stock -= quantity;
+            _appDbContext.Products.Update(product);
+            await _appDbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> ChangeStatusProduct(int id)
+        {
+            var product = await _appDbContext.Products.FirstOrDefaultAsync(x => x.Id == id);
+            if (product is null)
+            {
+                throw new KeyNotFoundException(Exceptions.ProductNotFound);
+            }
+            product.Status = "Unavailable";
             _appDbContext.Products.Update(product);
             await _appDbContext.SaveChangesAsync();
             return true;

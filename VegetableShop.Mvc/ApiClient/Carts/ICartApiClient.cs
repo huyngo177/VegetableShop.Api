@@ -1,4 +1,5 @@
-﻿using VegetableShop.Mvc.Models.Sale;
+﻿using VegetableShop.Mvc.Models;
+using VegetableShop.Mvc.Models.Sale;
 
 namespace VegetableShop.Mvc.ApiClient.Carts
 {
@@ -7,7 +8,7 @@ namespace VegetableShop.Mvc.ApiClient.Carts
         Task<List<CartItemViewModel>> AddToCart(int id, int quantity);
         List<CartItemViewModel> GetListItem();
         IEnumerable<CartItemViewModel> UpdateCart(int id, int quantity);
-        Task<bool> Checkout(CheckoutViewModel checkoutViewModel);
+        Task<CreateResponse> Checkout(UserInfoRequest userInfoRequest);
         CheckoutViewModel GetCheckoutViewModel();
         void RemoveCart();
         List<CartItemViewModel> RemoveItemInCart(int id);

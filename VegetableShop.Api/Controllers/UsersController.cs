@@ -89,7 +89,7 @@ namespace VegetableShop.Api.Controllers
             {
                 return NotFound();
             }
-            if (await _userService.DeLeteAsync(id))
+            if (await _userService.ChangeLockedStatusAsync(id))
             {
                 return NoContent();
             }

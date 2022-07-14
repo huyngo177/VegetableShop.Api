@@ -33,14 +33,8 @@
                     <p>
                         @Model.Product.Description
                     </p>
-                    @*<div class="product__details__quantity">
-                        <div class="quantity">
-                            <div class="pro-qty">
-                                <input type="text" value="1" min="1" max="@Model.Product.Stock">
-                            </div>
-                        </div>
-                    </div>*@
-                    <a asp-action="AddToCart" asp-controller="Cart" asp-route-id="@Model.Product.Id" class="primary-btn">ADD TO CARD</a>
+                    <a href="/Cart/AddToCart/@Model.Product.Id" class="primary-btn">ADD TO CARD</a>
+
                     <a asp-action="Index" asp-controller="UserHome" class="primary-btn">BACK</a>
                     <ul>
                         <li><b>Category:</b> <span>@Model.Product.CategoryName</span></li>

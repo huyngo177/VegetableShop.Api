@@ -1,14 +1,11 @@
 ﻿namespace VegetableShop.Mvc.Models.Sale
 {
-    public class CheckOutRequest
+    public class UserInfoRequest
     {
+        public int UserId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-
-        public string Address { get; set; }
-
         public string PhoneNumber { get; set; }
-
-        public List<OrderDetailViewModel> OrderDetails { set; get; } = new List<OrderDetailViewModel>();
+        public string Address { get; set; }
     }
 }

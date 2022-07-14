@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using VegetableShop.Api.Dto.Page;
 using VegetableShop.Api.Dto.Products;
 using VegetableShop.Api.Services.Products;
 
@@ -21,10 +22,10 @@ namespace VegetableShop.Api.Controllers
             _configuration = configuration;
             _imagePath = $"{_configuration["BaseAddress"]}";
         }
-        [HttpGet]
-        public IActionResult GetAll()
+        [HttpGet("page")]
+        public async Task<IActionResult> GetAll([FromQuery] GetProductPageRequest request)
         {
-            return Ok(_productService.GetAll());
+            return Ok(await _productService.GetAllAsync(request));
         }
 
         [HttpGet("{id}")]
@@ -76,22 +77,22 @@ namespace VegetableShop.Api.Controllers
             {
                 return NotFound();
             }
-            if (await _productService.DeLeteAsync(id))
+            if (await _productService.ChangeStatusProduct(id))
             {
                 return NoContent();
             }
             return BadRequest();
         }
 
-        [HttpGet("categories/{categoryId}")]
-        public async Task<IActionResult> GetProductByCategoryIdAsync(int categoryId)
-        {
-            var products = await _productService.GetProductByCategoryIdAsync(categoryId);
-            if (products is not null)
-            {
-                return Ok(products);
-            }
-            return BadRequest();
-        }
+        //[HttpGet("categories/{categoryId}")]
+        //public async Task<IActionResult> GetProductByCategoryIdAsync(int categoryId)
+        //{
+        //    var products = await _productService.GetProductByCategoryIdAsync(categoryId);
+        //    if (products is not null)
+        //    {
+        //        return Ok(products);
+        //    }
+        //    return BadRequest();
+        //}
     }
 }

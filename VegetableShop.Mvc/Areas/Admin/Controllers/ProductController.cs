@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using VegetableShop.Api.Dto.Page;
 using VegetableShop.Mvc.ApiClient.Products;
 using VegetableShop.Mvc.Models.Products;
 
-namespace VegetableShop.Mvc.Controllers
+namespace VegetableShop.Mvc.Areas.Admin.Controllers
 {
-    [Authorize]
+  
     public class ProductController : Controller
     {
         private readonly IProductApiClient _productApiClient;
@@ -17,9 +18,17 @@ namespace VegetableShop.Mvc.Controllers
             _mapper = mapper;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string keyword, int? categoryId, int pageIndex = 1, int pageSize = 4)
         {
-            return View(await _productApiClient.GetAllAsync());
+            var request = new GetProductPageRequest()
+            {
+                Keyword = keyword,
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                CategoryId = categoryId
+            };
+            ViewBag.Keyword = keyword;
+            return View(await _productApiClient.GetAllAsync(request));
         }
 
         [HttpGet]
@@ -60,7 +69,7 @@ namespace VegetableShop.Mvc.Controllers
             var response = await _productApiClient.UpdateAsync(id, request);
             if (response.IsSuccess)
             {
-                return View("Detail", new { id = id });
+                return View("Detail", new { id });
             }
             return View(request);
         }

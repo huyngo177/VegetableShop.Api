@@ -25,8 +25,8 @@ namespace VegetableShop.Mvc.ApiClient.User
 
         public async Task<PageResult<UserViewModel>> GetAllAsync(GetUserPageRequest request)
         {
-            return await GetAsync<PageResult<UserViewModel>>("api/users/page?pageIndex=" +
-                $"{request.PageIndex}&pageSize={request.PageSize}&keyword={request.Keyword}");
+            return await GetAsync<PageResult<UserViewModel>>(
+                $"api/users/page?pageIndex={request.PageIndex}&pageSize={request.PageSize}&keyword={request.Keyword}");
         }
 
         public async Task<UserViewModel> GetUserByIdAsync(int id)

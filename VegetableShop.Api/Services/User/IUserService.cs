@@ -12,6 +12,7 @@ namespace VegetableShop.Api.Services.User
         Task<CreateResponse> CreateAsync(CreateUserDto createUserDto);
         Task<bool> UpdateAsync(int id, UpdateUserDto updateUserDto);
         Task<bool> DeLeteAsync(int id);
+        Task<bool> ChangeLockedStatusAsync(int id);
         Task<bool> AssignRoleAsync(int id, IEnumerable<string> roles);
         Task<bool> RemoveRoleAsync(int id, IEnumerable<string> roles);
         Task<Response> LoginAsync(LoginDto loginDto);

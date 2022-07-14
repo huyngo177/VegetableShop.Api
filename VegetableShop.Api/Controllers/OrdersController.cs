@@ -19,9 +19,9 @@ namespace VegetableShop.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateOrderDto createOrderDto)
+        public IActionResult Create([FromBody] CreateOrderDto createOrderDto)
         {
-            var order = await _orderService.CreateAsync(createOrderDto);
+            var order = _orderService.CreateAsync(createOrderDto);
             if (order.IsSuccess)
             {
                 return Created(new Uri($"{_configuration["BaseAddress"]}/api/products/{order.orderDto.Id}"), order.orderDto);

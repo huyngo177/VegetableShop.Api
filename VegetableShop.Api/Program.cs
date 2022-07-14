@@ -34,10 +34,12 @@ builder.Services.AddDbContext<AppDbContext>(
     );
 
 //Identity
-builder.Services.AddIdentity<AppUser, AppRole>()
-                .AddEntityFrameworkStores<AppDbContext>()
-                .AddDefaultTokenProviders();
-
+//builder.Services.AddIdentity<AppUser, AppRole>()
+//                .AddEntityFrameworkStores<AppDbContext>()
+//                .AddDefaultTokenProviders();
+builder.Services.AddIdentityCore<AppUser>()
+                .AddRoles<AppRole>()
+                .AddEntityFrameworkStores<AppDbContext>();
 //DI
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();

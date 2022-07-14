@@ -1,12 +1,12 @@
-﻿@model IEnumerable<VegetableShop.Mvc.Models.Categories.CategoryViewModel>
+﻿@model IEnumerable<VegetableShop.Mvc.Models.Role.RoleViewModel>
 
 @{
     ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
 <br />
-<h3 class="page-header text-center">CATEGORY</h3>
+<h3 class="page-header text-center">ROLE</h3>
 
 <div class="card-body">
     <div class="col-md-12">
@@ -15,12 +15,15 @@
         </div>
         <table class="table table-striped table-hover">
             <thead>
-                <tr class="text-center">
+                <tr>
                     <th>
                         @Html.DisplayNameFor(model => model.Id)
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.Name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Description)
                     </th>
                     <th></th>
                 </tr>
@@ -29,13 +32,16 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td class="custom-td">
+                        <td>
                             @Html.DisplayFor(modelItem => item.Id)
                         </td>
-                        <td class="custom-td">
+                        <td>
                             @Html.DisplayFor(modelItem => item.Name)
                         </td>
-                        <td class="custom-td">
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Description)
+                        </td>
+                         <td class="custom-td">
                             <form asp-action="Delete" asp-route-id="@item.Id" method="post">
                                 <a asp-action="Update" asp-route-id="@item.Id" method="post" class="btn btn-primary">
                                     Update

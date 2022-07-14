@@ -1,12 +1,11 @@
-﻿@model VegetableShop.Mvc.Models.Sale.CheckoutViewModel;
+﻿@model VegetableShop.Mvc.Models.Orders.CreateOrderRequest;
 @{
     ViewData["Title"] = "CheckOut";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 @{
     decimal totalPrice = 0;
-    foreach (var item in Model.CartItems)
+    foreach (var item in Model.Items)
     {
         totalPrice = totalPrice + (decimal)(item.Quantity * item.Price);
     }
@@ -27,7 +26,7 @@
     <div class="container">
         <div class="checkout__form">
             <h4>Billing Details</h4>
-            <form asp-action="CheckOut" asp-controller="Cart">
+            <form action="#">
                 <div class="row">
                     <div class="col-lg-8 col-md-6">
                         <div class="row">
@@ -55,7 +54,13 @@
                                     <p>Phone<span>*</span></p>
                                     <input type="text">
                                 </div>
-                            </div>                   
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="checkout__input">
+                                    <p>Email<span>*</span></p>
+                                    <input type="text">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -63,16 +68,18 @@
                         <div class="checkout__order">
                             <h4>Your Order</h4>
                             <div class="checkout__order__products">Products <span>Total</span></div>
-                            @foreach (var item in Model.CartItems)
+                            @foreach (var item in Model.Items)
                             {
                                 <ul>
-                                    <li>@item.Name x @item.Quantity<span> @(item.Quantity*item.Price)</span></li>
+                                    @*<li>@item.Name<span></span></li>*@
+                                    <li>Fresh Vegetable <span>@(item.Quantity*item.Price)</span></li>
                                 </ul>
                             }
                             <div class="checkout__order__total">Total <span>@totalPrice</span></div>
                             <button type="submit" class="site-btn">PLACE ORDER</button>
                         </div>
                     </div>
+
                 </div>
             </form>
         </div>

@@ -1,24 +1,25 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VegetableShop.Mvc.ApiClient.Categories;
-using VegetableShop.Mvc.ApiClient.Role;
-using VegetableShop.Mvc.Models.Role;
+using VegetableShop.Mvc.Models.Categories;
 
-namespace VegetableShop.Mvc.Controllers
+namespace VegetableShop.Mvc.Areas.Admin.Controllers
 {
-    public class RoleController : Controller
+    [Authorize]
+    public class CategoryController : Controller
     {
-        private readonly IRoleApiClient _roleApiClient;
+        private readonly ICategoryApiClient _categoryApiClient;
         private readonly IMapper _mapper;
-        public RoleController(IRoleApiClient categoryApiClient, IMapper mapper)
+        public CategoryController(ICategoryApiClient categoryApiClient, IMapper mapper)
         {
-            _roleApiClient = categoryApiClient;
+            _categoryApiClient = categoryApiClient;
             _mapper = mapper;
         }
 
         public async Task<IActionResult> Index()
         {
-            return View(await _roleApiClient.GetAllAsync());
+            return View(await _categoryApiClient.GetAllAsync());
         }
 
         [HttpGet]
@@ -29,9 +30,9 @@ namespace VegetableShop.Mvc.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateRoleRequest request)
+        public async Task<IActionResult> Create(CreateCategoryRequest request)
         {
-            var response = await _roleApiClient.CreateAsync(request);
+            var response = await _categoryApiClient.CreateAsync(request);
             if (response.IsSuccess)
             {
                 return RedirectToAction("Index");
@@ -42,18 +43,18 @@ namespace VegetableShop.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
-            var product = await _roleApiClient.GetCategoryByIdAsync(id);
-            return View(_mapper.Map<UpdateRoleRequest>(product));
+            var product = await _categoryApiClient.GetCategoryByIdAsync(id);
+            return View(_mapper.Map<UpdateCategoryRequest>(product));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(int id, UpdateRoleRequest request)
+        public async Task<IActionResult> Update(int id, UpdateCategoryRequest request)
         {
-            var response = await _roleApiClient.UpdateAsync(id, request);
+            var response = await _categoryApiClient.UpdateAsync(id, request);
             if (response.IsSuccess)
             {
-                return View("Detail", new { id = id });
+                return View("Detail", new { id });
             }
             return View(request);
         }
@@ -62,13 +63,13 @@ namespace VegetableShop.Mvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var response = await _roleApiClient.DeleteAsync(id);
+            var response = await _categoryApiClient.DeleteAsync(id);
             if (response.IsSuccess)
             {
-                TempData["Message"] = "Delete role success";
+                TempData["Message"] = "Delete category success";
                 return RedirectToAction("Index");
             }
-            TempData["Message"] = "Delete role fail";
+            TempData["Message"] = "Delete category fail";
             return RedirectToAction("Index", new { message = response.Message });
         }
     }

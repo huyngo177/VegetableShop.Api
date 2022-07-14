@@ -1,16 +1,15 @@
-﻿@using VegetableShop.Mvc.Models.Categories
-@model VegetableShop.Mvc.Models.Products.CreateProductRequest
+﻿@model VegetableShop.Mvc.Models.Products.UpdateProductRequest
 
 @{
-    ViewData["Title"] = "Create";
-    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Update";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
-<br />
+
 <div>
-    <h3 class="page-header text-center">CREATE NEW PRODUCT</h3>
+    <h3 class="page-header text-center">UPDATE PRODUCT</h3>
     <hr />
     <div class="card-body">
-        <form asp-action="Create">
+        <form asp-action="Update">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="row mb-3">
                 <div class="col-md-6">
@@ -36,11 +35,11 @@
                         <span asp-validation-for="Stock" class="text-danger"></span>
                     </div>
                 </div>
-                @*                <div class="col-md-6">
+                @*<div class="col-md-6">
                 <div class="form-floating mb-3 mb-md-0">
-                <input asp-for="DateCreated" class="form-control" />
-                <label asp-for="DateCreated" class="control-label"></label>
-                <span asp-validation-for="DateCreated" class="text-danger"></span>
+                <input asp-for="DateUpdated" class="form-control" />
+                <label asp-for="DateUpdated" class="control-label"></label>
+                <span asp-validation-for="DateUpdated" class="text-danger"></span>
                 </div>
                 </div>*@
                 <div class="col-md-6">
@@ -56,10 +55,10 @@
                     <label asp-for="CategoryId" class="control-label"></label>
 
                     @*<select asp-for="CategoryId">
-                        @foreach (var item in @Model.Categories)
-                        {
-                            <option value="@item.Id">@item.Name</option>
-                        }
+                    @foreach (var item in @Model.Categories)
+                    {
+                    <option value="@item.Id">@item.Name</option>
+                    }
                     </select>*@
                 </div>
             </div>
@@ -71,18 +70,10 @@
                 </div>
             </div>
             <div>
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Update" class="btn btn-primary" />
                 <a class="btn btn-success" asp-action="Index" asp-controller="Product">Back</a>
             </div>
         </form>
     </div>
 </div>
-<script src="~/js/Chart.min.js"></script>
-<script src="~/js/jquery-1.11.1.min.js "></script>
-<script>
-    $(document).ready(function() {
-        $('#example').DataTable({
-            stateSave: true,
-        });
-    });
-</script>
+

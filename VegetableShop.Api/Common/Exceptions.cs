@@ -4,6 +4,7 @@
     {
         public const string BadRequest = "Bad Request";
         public const string UserNotFound = "User Not Found";
+        public const string UserNotExist = "User Not Exist";
         public const string EmailExist = "Email exist ";
         public const string EmailNotFound = "Email not found ";
         public const string EmailBlocked = "Email blocked ";

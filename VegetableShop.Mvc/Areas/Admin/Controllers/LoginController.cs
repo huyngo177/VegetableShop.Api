@@ -9,7 +9,7 @@ using System.Text;
 using VegetableShop.Mvc.ApiClient.User;
 using VegetableShop.Mvc.Models;
 
-namespace VegetableShop.Mvc.Controllers
+namespace VegetableShop.Mvc.Areas.Admin.Controllers
 {
     public class LoginController : Controller
     {
@@ -49,6 +49,13 @@ namespace VegetableShop.Mvc.Controllers
             var userPrincipal = ValidateToken(result.Token);
 
             HttpContext.Session.SetString("Token", result.Token);
+            HttpContext.Response.Cookies.Append(
+                "userId",
+                result.userId.ToString(),
+                new CookieOptions
+                {
+                    Expires = DateTime.Now.AddYears(1)
+                });
             await HttpContext.SignInAsync(
                         CookieAuthenticationDefaults.AuthenticationScheme,
                         userPrincipal,
@@ -64,9 +71,7 @@ namespace VegetableShop.Mvc.Controllers
             validationParameters.ValidAudience = _configuration["Jwt:Audience"];
             validationParameters.ValidIssuer = _configuration["Jwt:Issuer"];
             validationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
-
             ClaimsPrincipal principal = new JwtSecurityTokenHandler().ValidateToken(jwtToken, validationParameters, out validatedToken);
-
             return principal;
         }
     }

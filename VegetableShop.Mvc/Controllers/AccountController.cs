@@ -47,14 +47,13 @@ namespace VegetableShop.Mvc.Controllers
                 IsPersistent = true
             };
             var userPrincipal = ValidateToken(result.Token);
-            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var claims = new List<Claim>()
-            {
-                new Claim(ClaimTypes.NameIdentifier,id)
-            };
-
-            ClaimsPrincipal principal = new ClaimsPrincipal(new ClaimsIdentity[] { new ClaimsIdentity(claims) });
-
+            HttpContext.Response.Cookies.Append(
+                "userId",
+                result.userId.ToString(),
+                new CookieOptions
+                {
+                    Expires = DateTime.Now.AddYears(1)
+                });
             HttpContext.Session.SetString("Token", result.Token);
             await HttpContext.SignInAsync(
                         CookieAuthenticationDefaults.AuthenticationScheme,

@@ -9,6 +9,7 @@
         public string? Token { get; set; }
 
         public string? RefreshToken { get; set; }
+        public int userId { get; set; }
 
         public Response(string msg)
         {

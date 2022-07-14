@@ -8,7 +8,7 @@ namespace VegetableShop.Api.Services.Orders
     {
         Task<IEnumerable<OrderDto>> GetAll();
         Task<OrderDto> GetOrderByIdAsync(int id);
-        Task<CreateResponse> CreateAsync(CreateOrderDto createOrderDto);
+        CreateResponse CreateAsync(CreateOrderDto createOrderDto);
         Task<bool> UpdateAsync(int id, UpdateOrderDto updateOrderDto);
         Task<bool> DeLeteAsync(int id);
         Task<IEnumerable<OrderDto>> GetOrderByUserIdAsync(int userId);

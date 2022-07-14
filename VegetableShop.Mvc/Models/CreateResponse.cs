@@ -1,4 +1,5 @@
 ﻿using VegetableShop.Mvc.Models.Categories;
+using VegetableShop.Mvc.Models.Orders;
 using VegetableShop.Mvc.Models.Products;
 using VegetableShop.Mvc.Models.Role;
 using VegetableShop.Mvc.Models.User;
@@ -11,6 +12,7 @@ namespace VegetableShop.Mvc.Models
         public RoleViewModel roleVm { get; set; }
         public ProductViewModel productVm { get; set; }
         public CategoryViewModel categoryVm { get; set; }
+        public OrderViewModel orderVm { get; set; }
         public object obj { get; set; }
 
         public CreateResponse(UserViewModel userVm, string msg)
@@ -38,6 +40,12 @@ namespace VegetableShop.Mvc.Models
         {
             IsSuccess = true;
             this.categoryVm = categoryVm;
+            Message = msg;
+        }
+        public CreateResponse(OrderViewModel orderVm, string msg)
+        {
+            IsSuccess = true;
+            this.orderVm = orderVm;
             Message = msg;
         }
 

@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using VegetableShop.Api.Dto.Page;
 using VegetableShop.Mvc.ApiClient.User;
 using VegetableShop.Mvc.Models.User;
 
-namespace VegetableShop.Mvc.Controllers
+namespace VegetableShop.Mvc.Areas.Admin.Controllers
 {
     [Authorize]
     public class UserController : Controller
@@ -19,9 +20,15 @@ namespace VegetableShop.Mvc.Controllers
             _mapper = mapper;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string keyword, int pageIndex = 1, int pageSize = 5)
         {
-            var users = await _userApiClient.GetAllAsync();
+            var request = new GetUserPageRequest()
+            {
+                Keyword = keyword,
+                PageIndex = pageIndex,
+                PageSize = pageSize
+            };
+            var users = await _userApiClient.GetAllAsync(request);
             return View(users);
         }
 
@@ -72,7 +79,7 @@ namespace VegetableShop.Mvc.Controllers
             var response = await _userApiClient.UpdateAsync(id, request);
             if (response.IsSuccess)
             {
-                return RedirectToAction("Detail", new { id = id });
+                return RedirectToAction("Detail", new { id });
             }
             return View(request);
         }

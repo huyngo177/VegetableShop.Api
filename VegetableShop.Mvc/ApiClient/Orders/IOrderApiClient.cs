@@ -8,7 +8,7 @@ namespace VegetableShop.Mvc.ApiClient.Orders
         Task<IEnumerable<OrderViewModel>> GetAllAsync();
         Task<OrderViewModel> GetOrderByIdAsync(int id);
         Task<IEnumerable<OrderViewModel>> GetOrderByUserIdAsync(int id);
-        Task<CreateResponse> CreateAsync(CreateOrderRequest request);
+        Task<CreateResponse> CreateAsync();
         Task<Response> UpdateAsync(int id, UpdateOrderRequest request);
         Task<Response> DeleteAsync(int id);
     }

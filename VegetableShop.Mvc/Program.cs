@@ -64,11 +64,24 @@ app.UseAuthorization();
 
 app.UseSession();
 
-app.UseMvc();
+app.UseMvc(routes =>
+{
+    routes.MapRoute(
+        name: "admin",
+        template: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=UserHome}/{action=Index}/{id?}");
+    routes.MapRoute(
+        name: "default",
+        template: "{controller=UserHome}/{action=Index}/{id?}");
+});
+
+//app.MapControllerRoute(
+//    name: "MyArea",
+//    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+//app.MapControllerRoute(
+//    name: "default",
+//    pattern: "{controller=UserHome}/{action=Index}/{id?}");
 
 app.UseCors("_allowSpecificOrigins");
 app.Run();

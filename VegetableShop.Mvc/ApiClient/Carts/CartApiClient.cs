@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using Newtonsoft.Json;
+using VegetableShop.Mvc.Models;
+using VegetableShop.Api.Dto.Orders;
 using VegetableShop.Mvc.ApiClient.Products;
 using VegetableShop.Mvc.Models.Sale;
+using VegetableShop.Mvc.Models.User;
 
 namespace VegetableShop.Mvc.ApiClient.Carts
 {
@@ -13,6 +16,7 @@ namespace VegetableShop.Mvc.ApiClient.Carts
         private readonly string _imagePath;
         private readonly IProductApiClient _productApiClient;
         private readonly IHttpContextAccessor context;
+        private readonly HttpClient _client;
 
         public CartApiClient(IConfiguration configuration, IHttpClientFactory httpClientFactory, IMapper mapper, IProductApiClient productApiClient, IHttpContextAccessor context)
             : base(configuration, httpClientFactory, mapper)
@@ -23,6 +27,8 @@ namespace VegetableShop.Mvc.ApiClient.Carts
             _imagePath = $"{_configuration["BaseAddress"]}";
             _productApiClient = productApiClient;
             this.context = context;
+            _client = _clientFactory.CreateClient();
+            _client.BaseAddress = new Uri($"{_configuration["BaseAddress"]}");
         }
 
         public List<CartItemViewModel> GetListItem()
@@ -92,8 +98,12 @@ namespace VegetableShop.Mvc.ApiClient.Carts
             return currentCart;
         }
 
-        public async Task<bool> Checkout(CheckoutViewModel checkoutViewModel)
+        public async Task<CreateResponse> Checkout(UserInfoRequest userInfoRequest)
         {
+            //_ = int.TryParse(context.HttpContext.Request.Cookies["userId"], out int id);
+            int id = 1;
+            var user = await GetAsync<UserViewModel>($"api/users/{id}");
+
             var currentItem = GetCheckoutViewModel();
             var orderDetail = new List<OrderDetailViewModel>();
             foreach (var item in currentItem.CartItems)
@@ -104,7 +114,37 @@ namespace VegetableShop.Mvc.ApiClient.Carts
                     Quantity = item.Quantity,
                 });
             }
-            return true;
+            if (user.Id == 0)
+            {
+                return new CreateResponse(false);
+            }
+            currentItem.CheckOutRequest.OrderDetails = orderDetail;
+            currentItem.CheckOutRequest.PhoneNumber = user.PhoneNumber;
+            currentItem.CheckOutRequest.Address = user.Address;
+            currentItem.CheckOutRequest.FirstName = user.FirstName;
+            currentItem.CheckOutRequest.LastName = user.LastName;
+            var createOrderDto = new CreateOrderDto()
+            {
+                FirstName = currentItem.CheckOutRequest.FirstName,
+                LastName = currentItem.CheckOutRequest.LastName,
+                Address = currentItem.CheckOutRequest.Address,
+                PhoneNumber = currentItem.CheckOutRequest.PhoneNumber,
+                UserId = id,
+            };
+
+            //foreach (var item in currentItem.CartItems)
+            //{
+                
+            //}
+            var response = await _client.PostAsync("api/orders", HandleRequest(createOrderDto));
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<CreateResponse>(data);
+            }
+            var body = JsonConvert.DeserializeObject<CreateResponse>(await response.Content.ReadAsStringAsync());
+            body.IsSuccess = false;
+            return body;
         }
 
         public CheckoutViewModel GetCheckoutViewModel()

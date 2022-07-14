@@ -9,5 +9,6 @@ namespace VegetableShop.Api.Data.Entities
         public string Address { get; set; }
         public virtual List<Order> Orders { get; set; }
         public string? RefreshToken { get; set; }
+        public bool IsLocked { get; set; }
     }
 }

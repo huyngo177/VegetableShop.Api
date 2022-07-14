@@ -1,7 +1,7 @@
 ﻿@model VegetableShop.Mvc.Models.User.CreateUserRequest
 
 @{
-    Layout = null;
+    Layout = "";
 }
 
 <!DOCTYPE html>
@@ -26,7 +26,7 @@
                             <div class="card shadow-lg border-0 rounded-lg mt-5">
                                 <div class="card-header"><h3 class="text-center font-weight-light my-4">Create User Account</h3></div>
                                 <div class="card-body">
-                                    <form asp-action="Create">
+                                    <form asp-action="Register">
                                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                         <div class="row mb-3">
                                             <div class="col-md-6">
@@ -94,7 +94,7 @@
                                         </div>
                                         <div>
                                             <input type="submit" value="Create" class="btn btn-primary" />
-                                            <a class="btn btn-success" asp-action="Login" asp-controller="Accout">Back</a>
+                                            <a class="btn btn-success" asp-action="Login" asp-controller="Account">Back</a>
                                         </div>
                                     </form>
                                 </div>

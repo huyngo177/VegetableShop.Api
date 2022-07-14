@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using VegetableShop.Mvc.Models;
 using VegetableShop.Mvc.Models.Orders;
+using VegetableShop.Mvc.Models.Sale;
 
 namespace VegetableShop.Mvc.ApiClient.Orders
 {
@@ -24,8 +25,18 @@ namespace VegetableShop.Mvc.ApiClient.Orders
             _client = _clientFactory.CreateClient();
             _client.BaseAddress = new Uri($"{_configuration["BaseAddress"]}");
         }
-        public async Task<CreateResponse> CreateAsync(CreateOrderRequest request)
+        public async Task<CreateResponse> CreateAsync()
         {
+            var session = context.HttpContext.Session.GetString("CartSession");
+            List<CartItemViewModel> currentCart = new List<CartItemViewModel>();
+            if (session != null)
+            {
+                currentCart = JsonConvert.DeserializeObject<List<CartItemViewModel>>(session);
+            }
+            var request = new CreateOrderRequest()
+            {
+
+            };
             var response = await _client.PostAsync("api/orders", HandleRequest(request));
             if (response.IsSuccessStatusCode)
             {
