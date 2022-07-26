@@ -11,7 +11,7 @@ namespace VegetableShop.Api.Mapper.User
             CreateMap<AppUser, AppUserDto>();
             CreateMap<CreateUserDto, AppUser>();
             CreateMap<UpdateUserDto, AppUser>()
-                .ForAllMembers(opts => opts.Condition((source, dest, sourceMember) => sourceMember != null || sourceMember != ""));
+                    .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => !string.IsNullOrEmpty(srcMember?.ToString())));
         }
     }
 }

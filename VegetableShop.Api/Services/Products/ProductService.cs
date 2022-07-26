@@ -76,10 +76,6 @@ namespace VegetableShop.Api.Services.Products
         public async Task<bool> DeLeteAsync(int id)
         {
             var product = await _appDbContext.Products.FirstOrDefaultAsync(x => x.Id == id);
-            if (product is null)
-            {
-                throw new KeyNotFoundException(Exceptions.ProductNotFound);
-            }
             var init = _appDbContext.Database.CreateExecutionStrategy();
             await init.ExecuteAsync(async () =>
             {
@@ -168,10 +164,6 @@ namespace VegetableShop.Api.Services.Products
                 throw new AppException(Exceptions.BadRequest);
             }
             var result = _appDbContext.Products.FirstOrDefault(x => x.Id == id);
-            if (result is null)
-            {
-                return false;
-            }
             if (await _appDbContext.Categories.FirstOrDefaultAsync(x => x.Id == updateProductDto.CategoryId) is null)
             {
                 throw new AppException(Exceptions.CategoryNameNotExist);
@@ -212,20 +204,6 @@ namespace VegetableShop.Api.Services.Products
         {
             return await _storageService.DeleteFilePathAsync(filePath);
         }
-
-        //public async Task<PageResult<ProductDto>> GetProductByCategoryIdAsync(GetProductPageRequest request)
-        //{
-        //    var query = from pro in _appDbContext.Products
-        //                join cate in _appDbContext.Categories on pro.CategoryId equals cate.Id
-        //    var cate = await _appDbContext.Categories.FirstOrDefaultAsync(x => x.Id == categoryId);
-        //    var productDtos = new List<ProductDto>();
-        //    foreach (var item in cate.Products)
-        //    {
-        //        item.ImagePath = $"{_imagePath}{item.ImagePath}";
-        //        productDtos.Add(_mapper.Map<ProductDto>(item));
-        //    }
-        //    return productDtos;
-        //}
 
         public async Task<bool> UpdateStock(int id, int quantity)
         {

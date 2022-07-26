@@ -6,9 +6,9 @@ using VegetableShop.Api.Services.Products;
 
 namespace VegetableShop.Api.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
-
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _productService;
@@ -22,13 +22,16 @@ namespace VegetableShop.Api.Controllers
             _configuration = configuration;
             _imagePath = $"{_configuration["BaseAddress"]}";
         }
+
         [HttpGet("page")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll([FromQuery] GetProductPageRequest request)
         {
             return Ok(await _productService.GetAllAsync(request));
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetProductByIdAsync(int id)
         {
             if (string.IsNullOrEmpty(id.ToString()))
@@ -83,16 +86,5 @@ namespace VegetableShop.Api.Controllers
             }
             return BadRequest();
         }
-
-        //[HttpGet("categories/{categoryId}")]
-        //public async Task<IActionResult> GetProductByCategoryIdAsync(int categoryId)
-        //{
-        //    var products = await _productService.GetProductByCategoryIdAsync(categoryId);
-        //    if (products is not null)
-        //    {
-        //        return Ok(products);
-        //    }
-        //    return BadRequest();
-        //}
     }
 }

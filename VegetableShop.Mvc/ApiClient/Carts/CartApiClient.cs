@@ -18,7 +18,10 @@ namespace VegetableShop.Mvc.ApiClient.Carts
         private readonly IHttpContextAccessor context;
         private readonly HttpClient _client;
 
-        public CartApiClient(IConfiguration configuration, IHttpClientFactory httpClientFactory, IMapper mapper, IProductApiClient productApiClient, IHttpContextAccessor context)
+        public CartApiClient(IConfiguration configuration, 
+            IHttpClientFactory httpClientFactory, 
+            IMapper mapper, IProductApiClient productApiClient, 
+            IHttpContextAccessor context)
             : base(configuration, httpClientFactory, mapper)
         {
             _configuration = configuration;
@@ -100,8 +103,7 @@ namespace VegetableShop.Mvc.ApiClient.Carts
 
         public async Task<CreateResponse> Checkout(UserInfoRequest userInfoRequest)
         {
-            //_ = int.TryParse(context.HttpContext.Request.Cookies["userId"], out int id);
-            int id = 1;
+            _ = int.TryParse(context?.HttpContext?.Request.Cookies["userId"], out int id);
             var user = await GetAsync<UserViewModel>($"api/users/{id}");
 
             var currentItem = GetCheckoutViewModel();

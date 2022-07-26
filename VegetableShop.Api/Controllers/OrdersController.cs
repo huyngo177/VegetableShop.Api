@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using VegetableShop.Api.Dto.Orders;
 using VegetableShop.Api.Services.Orders;
-using VegetableShop.Api.Services.Products;
 
 namespace VegetableShop.Api.Controllers
 {
@@ -46,7 +44,7 @@ namespace VegetableShop.Api.Controllers
             return Ok(order);
         }
 
-        [HttpGet("userId/{id}")]
+        [HttpGet("me/{id}")]
         public async Task<IActionResult> GetOrderByUserId(int id)
         {
             var order = await _orderService.GetOrderByUserIdAsync(id);
@@ -55,22 +53,7 @@ namespace VegetableShop.Api.Controllers
                 return NotFound();
             }
             return Ok(order);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromBody] UpdateOrderDto updateOrderDto, int id)
-        {
-            if (await _orderService.GetOrderByIdAsync(id) is null)
-            {
-                return NotFound();
-            }
-            var order = await _orderService.UpdateAsync(id, updateOrderDto);
-            if (order)
-            {
-                return Ok();
-            }
-            return BadRequest();
-        }
+        }  
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)

@@ -39,10 +39,6 @@ namespace VegetableShop.Api.Services.Role
         public async Task<bool> DeleteAsync(int id)
         {
             var role = await _roleManager.FindByIdAsync(id.ToString());
-            if (role is null)
-            {
-                return false;
-            }
             await _roleManager.DeleteAsync(role);
             return true;
         }
@@ -67,10 +63,6 @@ namespace VegetableShop.Api.Services.Role
         public async Task<bool> UpdateAsync(int id, UpdateRoleDto updateRoleDto)
         {
             var role = await _roleManager.FindByIdAsync(id.ToString());
-            if (role is null)
-            {
-                throw new KeyNotFoundException(Exceptions.RoleNotFound);
-            }
             var roleDto = _mapper.Map(updateRoleDto, role);
             var result = await _roleManager.UpdateAsync(roleDto);
             if (result.Succeeded)

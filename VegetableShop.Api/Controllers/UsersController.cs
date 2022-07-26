@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VegetableShop.Api.Dto.Page;
 using VegetableShop.Api.Dto.User;
@@ -7,6 +6,7 @@ using VegetableShop.Api.Services.User;
 
 namespace VegetableShop.Api.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -67,10 +67,6 @@ namespace VegetableShop.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateUserDto updateUserDto)
         {
-            if (string.IsNullOrEmpty(id.ToString()) || updateUserDto is null)
-            {
-                return BadRequest();
-            }
             if (await _userService.GetUserByIdAsync(id) is null)
             {
                 return NotFound();
@@ -96,30 +92,29 @@ namespace VegetableShop.Api.Controllers
             return BadRequest();
         }
 
-        [HttpPut("{id}/roles")]
-        public async Task<IActionResult> AssignRoleAsync(int id, [FromBody] IEnumerable<string> roles)
+        [HttpPut("{id}/assign-role")]
+        [AllowAnonymous]
+        public async Task<IActionResult> AssignRoleAsync(int id, [FromBody] string role)
         {
             if (await _userService.GetUserByIdAsync(id) is null)
             {
                 return NotFound();
             }
-            var user = await _userService.AssignRoleAsync(id, roles);
-            if (user)
+            if (await _userService.AssignRoleAsync(id, role))
             {
                 return Ok(await _userService.GetUserByIdAsync(id));
             }
             return BadRequest();
         }
 
-        [HttpDelete("{id}/roles")]
-        public async Task<IActionResult> RemoveRoleAsync(int id, [FromBody] IEnumerable<string> roles)
+        [HttpDelete("{id}/remove-role")]
+        public async Task<IActionResult> RemoveRoleAsync(int id, [FromBody] string role)
         {
             if (await _userService.GetUserByIdAsync(id) is null)
             {
                 return NotFound();
             }
-            var user = await _userService.RemoveRoleAsync(id, roles);
-            if (user)
+            if (await _userService.RemoveRoleAsync(id, role))
             {
                 return Ok(await _userService.GetUserByIdAsync(id));
             }
@@ -144,19 +139,32 @@ namespace VegetableShop.Api.Controllers
             {
                 return NotFound();
             }
-            var result = await _userService.RevokeAsync(username);
-            if (!result)
+            if (await _userService.RevokeAsync(username))
             {
-                return BadRequest();
+                return Ok();
             }
-            return Ok();
+            return BadRequest();
         }
 
-        [HttpGet("revoke")]
+        [HttpGet("revokes")]
         public async Task<IActionResult> RevokeAllAsync()
         {
             await _userService.RevokeAllAsync();
             return Ok();
+        }
+
+        [HttpPut("{id}/update-password")]
+        public async Task<IActionResult> UpdatePasswordAsync(int id, UpdatePasswordDto updatePasswordDto)
+        {
+            if (await _userService.GetUserByIdAsync(id) is null)
+            {
+                return NotFound();
+            }
+            if (await _userService.UpdatePasswordAsync(id, updatePasswordDto))
+            {
+                return Ok();
+            }
+            return BadRequest();
         }
     }
 }

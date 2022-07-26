@@ -26,17 +26,20 @@ using VegetableShop.Api.Services.User;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
+
+_ = int.TryParse(builder.Configuration.GetSection("IdentityConfig:PasswordRequiredLength").Value, out int minLength);
+_ = int.TryParse(builder.Configuration.GetSection("IdentityConfig:PasswordRequiredUniqueChars").Value, out int minChars);
+_ = int.TryParse(builder.Configuration.GetSection("IdentityConfig:LockoutDefaultLockoutTimeSpan").Value, out int lockoutTime);
+_ = int.TryParse(builder.Configuration.GetSection("IdentityConfig:LockoutMaxFailedAccessAttempts").Value, out int accessAttempts);
+
 //DB Context
 builder.Services.AddDbContext<AppDbContext>(
     options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+            options.UseSqlServer(builder.Configuration.GetConnectionString(SystemConstants.ConnectionString))
                 .UseLazyLoadingProxies()
     );
 
 //Identity
-//builder.Services.AddIdentity<AppUser, AppRole>()
-//                .AddEntityFrameworkStores<AppDbContext>()
-//                .AddDefaultTokenProviders();
 builder.Services.AddIdentityCore<AppUser>()
                 .AddRoles<AppRole>()
                 .AddEntityFrameworkStores<AppDbContext>();
@@ -64,6 +67,7 @@ builder.Services.AddControllers()
                 )
                 .AddJsonOptions(
                     x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles
+
                 );
 
 //Configure Identity
@@ -73,14 +77,13 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequireLowercase = false;
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequireUppercase = false;
-    options.Password.RequiredLength = 6;
-    options.Password.RequiredUniqueChars = 2;
+    options.Password.RequiredLength = minLength;
+    options.Password.RequiredUniqueChars = minChars;
 
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-    options.Lockout.MaxFailedAccessAttempts = 3;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(lockoutTime);
+    options.Lockout.MaxFailedAccessAttempts = accessAttempts;
 
-    options.User.AllowedUserNameCharacters =
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+    options.User.AllowedUserNameCharacters = builder.Configuration.GetSection("IdentityConfig:UserAllowedUserNameCharacters").Value;
     options.User.RequireUniqueEmail = true;
 });
 
@@ -110,16 +113,16 @@ builder.Services
     });
 
 //Add Authorize
-builder.Services.AddAuthorization(opt =>
-{
-    opt.AddPolicy("AdminPolicy",
-      policy =>
-      {
-          policy.RequireClaim(ClaimTypes.Role, Roles.Admin);
-      });
-    opt.AddPolicy("MemberPolicy",
-        policy => policy.RequireClaim(ClaimTypes.Role, Roles.Member));
-});
+//builder.Services.AddAuthorization(opt =>
+//{
+//    opt.AddPolicy("AdminPolicy",
+//      policy =>
+//      {
+//          policy.RequireClaim(ClaimTypes.Role, Roles.Admin);
+//      });
+//    opt.AddPolicy("MemberPolicy",
+//        policy => policy.RequireClaim(ClaimTypes.Role, Roles.Member));
+//});
 
 //Add Swagger
 builder.Services.AddSwaggerGen(swagger =>
@@ -159,7 +162,7 @@ builder.Services.AddSwaggerGen(swagger =>
 
 var app = builder.Build();
 
-//SQL Local
+//Declare DB if not exist
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -176,6 +179,10 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
+
+app.UseAuthentication();
+
+app.UseRouting();
 
 app.UseAuthorization();
 

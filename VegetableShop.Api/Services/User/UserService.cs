@@ -34,14 +34,10 @@ namespace VegetableShop.Api.Services.User
             _appDbContext = appDbContext;
         }
 
-        public async Task<bool> AssignRoleAsync(int id, IEnumerable<string> roles)
+        public async Task<bool> AssignRoleAsync(int id, string role)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
-            if (user is null)
-            {
-                throw new KeyNotFoundException(Exceptions.UserNotFound);
-            }
-            await _userManager.AddToRolesAsync(user, roles);
+            await _userManager.AddToRoleAsync(user, role);
             return true;
         }
 
@@ -81,7 +77,7 @@ namespace VegetableShop.Api.Services.User
                             await _roleManager.CreateAsync(new AppRole()
                             {
                                 Name = Roles.Member,
-                                Description = "Member Role"
+                                Description = Roles.MemberDesc
                             });
                         }
                         await _userManager.AddToRoleAsync(user, Roles.Member);
@@ -91,11 +87,10 @@ namespace VegetableShop.Api.Services.User
                         await trans.CommitAsync();
                         return new CreateResponse(userDto, Messages.CreateSuccess);
                     }
-                    throw new AppException(Exceptions.CreateFail);
                 }
                 catch (Exception e)
                 {
-                    await trans?.RollbackAsync();
+                    await trans.RollbackAsync();
                 }
                 throw new AppException(Exceptions.CreateFail);
             }
@@ -105,10 +100,6 @@ namespace VegetableShop.Api.Services.User
         public async Task<bool> DeLeteAsync(int id)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
-            if (user is null)
-            {
-                throw new KeyNotFoundException(Exceptions.UserNotFound);
-            }
             var result = await _userManager.DeleteAsync(user);
             if (result.Succeeded)
             {
@@ -157,7 +148,9 @@ namespace VegetableShop.Api.Services.User
             {
                 throw new KeyNotFoundException(Exceptions.UserNotFound);
             }
-            return _mapper.Map<AppUserDto>(user);
+            var result = _mapper.Map<AppUserDto>(user);
+            result.Roles = await _userManager.GetRolesAsync(user);
+            return result;
         }
 
         public async Task<AppUserDto> GetUserByNameAsync(string username)
@@ -167,7 +160,9 @@ namespace VegetableShop.Api.Services.User
             {
                 throw new KeyNotFoundException(Exceptions.UserNotFound);
             }
-            return _mapper.Map<AppUserDto>(user);
+            var result = _mapper.Map<AppUserDto>(user);
+            result.Roles = await _userManager.GetRolesAsync(user);
+            return result;
         }
 
         public async Task<Response> LoginAsync(LoginDto loginDto)
@@ -185,15 +180,14 @@ namespace VegetableShop.Api.Services.User
             DateTimeOffset? dateTimeOffset = res.HasValue ? res : null;
             if (dateTimeOffset != null)
             {
-                _ = int.TryParse(_configuration["ValidateJwt:DefaultLockoutTimeSpan"], out int lockoutTime);
+                _ = int.TryParse(_configuration["IdentityConfig:LockoutDefaultLockoutTimeSpan"], out int lockoutTime);
                 if (dateTimeOffset?.AddMinutes(lockoutTime) > DateTime.Now)
                 {
                     throw new AppException(Exceptions.EmailBlocked);
                 }
             }
             var roles = await _userManager.GetRolesAsync(user);
-            //var result = await _signInManager.PasswordSignInAsync(user, loginDto.Password, loginDto.RememberMe, true);
-            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
+            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, true);
             if (!result.Succeeded)
             {
                 throw new AppException(Exceptions.LoginFail);
@@ -211,7 +205,6 @@ namespace VegetableShop.Api.Services.User
             }
             var token = CreateToken(claims);
             var refreshToken = CreateRefreshToken();
-            _ = int.TryParse(_configuration["Jwt:RefreshTokenValidityInDays"], out int expRefreshToken);
 
             user.RefreshToken = refreshToken;
             await _userManager.UpdateAsync(user);
@@ -254,24 +247,16 @@ namespace VegetableShop.Api.Services.User
             };
         }
 
-        public async Task<bool> RemoveRoleAsync(int id, IEnumerable<string> roles)
+        public async Task<bool> RemoveRoleAsync(int id, string role)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
-            if (user is null)
-            {
-                return false;
-            }
-            await _userManager.RemoveFromRolesAsync(user, roles);
+            await _userManager.RemoveFromRoleAsync(user, role);
             return true;
         }
 
         public async Task<bool> RevokeAsync(string username)
         {
             var user = await _userManager.FindByNameAsync(username);
-            if (user is null)
-            {
-                return false;
-            }
             user.RefreshToken = null;
             await _userManager.UpdateAsync(user);
             return true;
@@ -289,15 +274,15 @@ namespace VegetableShop.Api.Services.User
 
         public async Task<bool> UpdateAsync(int id, UpdateUserDto updateUserDto)
         {
+            if (updateUserDto is null)
+            {
+                throw new AppException(Exceptions.BadRequest);
+            }
             if (string.IsNullOrEmpty(id.ToString()))
             {
                 throw new AppException(Exceptions.NullId);
             }
             var user = await _userManager.FindByIdAsync(id.ToString());
-            if (user is null)
-            {
-                throw new KeyNotFoundException(Exceptions.UserNotFound);
-            }
             _mapper.Map(updateUserDto, user);
             var init = _appDbContext.Database.CreateExecutionStrategy();
             async Task<bool> Values()
@@ -305,14 +290,12 @@ namespace VegetableShop.Api.Services.User
                 using var trans = await _appDbContext.Database.BeginTransactionAsync();
                 try
                 {
-                    await _userManager.ChangePasswordAsync(user, updateUserDto.CurrentPassword, updateUserDto.NewPassword);
                     var res = await _userManager.UpdateAsync(user);
                     if (res.Succeeded)
                     {
                         await trans.CommitAsync();
                         return true;
                     }
-                    return false;
                 }
                 catch (Exception e)
                 {
@@ -326,7 +309,7 @@ namespace VegetableShop.Api.Services.User
         private JwtSecurityToken CreateToken(List<Claim> authClaims)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
-            _ = int.TryParse(_configuration["Jwt:TokenValidityInMinutes"], out int expTime);
+            _ = int.TryParse(_configuration["ValidateJwt:TokenValidityInMinutes"], out int expTime);
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
@@ -372,10 +355,6 @@ namespace VegetableShop.Api.Services.User
         public async Task<bool> ChangeLockedStatusAsync(int id)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
-            if (user is null)
-            {
-                throw new AppException(Exceptions.UserNotFound);
-            }
             user.IsLocked = true;
             var result = await _userManager.UpdateAsync(user);
             if (result.Succeeded)
@@ -383,6 +362,47 @@ namespace VegetableShop.Api.Services.User
                 return true;
             }
             return false;
+        }
+
+        public async Task<bool> UpdatePasswordAsync(int id, UpdatePasswordDto updatePasswordDto)
+        {
+            if (updatePasswordDto is null)
+            {
+                throw new AppException(Exceptions.BadRequest);
+            }
+            if (updatePasswordDto.CurrentPassword.Equals(updatePasswordDto.NewPassword))
+            {
+                throw new AppException(Exceptions.PasswordInvalid);
+            }
+            if (string.IsNullOrEmpty(id.ToString()))
+            {
+                throw new AppException(Exceptions.NullId);
+            }
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            var init = _appDbContext.Database.CreateExecutionStrategy();
+            async Task<bool> Values()
+            {
+                using var trans = await _appDbContext.Database.BeginTransactionAsync();
+                try
+                {
+                    var result = await _userManager.ChangePasswordAsync(user, updatePasswordDto.CurrentPassword, updatePasswordDto.NewPassword);
+                    if (result.Succeeded)
+                    {
+                        var res = await _userManager.UpdateAsync(user);
+                        if (res.Succeeded)
+                        {
+                            await trans.CommitAsync();
+                            return true;
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    await trans?.RollbackAsync();
+                }
+                throw new AppException(Exceptions.CurrentPasswordInvalid);
+            }
+            return await init.ExecuteAsync(Values);
         }
     }
 }
