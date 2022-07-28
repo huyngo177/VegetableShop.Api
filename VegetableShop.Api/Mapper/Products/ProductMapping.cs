@@ -12,6 +12,7 @@ namespace VegetableShop.Api.Mapper.Products
                 .ForMember(x => x.CategoryName, y => y.MapFrom(x => x.Category.Name));
             CreateMap<CreateProductDto, Product>();
             CreateMap<UpdateProductDto, Product>()
+                .ForMember(x => x.DateCreated, y => y.MapFrom(x => x.DateUpdated))
                 .ForAllMembers(opts => opts.Condition((source, dest, sourceMember) => sourceMember != null || sourceMember != ""));
         }
     }

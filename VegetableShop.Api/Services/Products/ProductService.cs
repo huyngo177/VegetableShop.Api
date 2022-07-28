@@ -49,8 +49,7 @@ namespace VegetableShop.Api.Services.Products
                 throw new AppException(errors);
             }
             var product = _mapper.Map<Product>(createProductDto);
-            product.DateUpdated = null;
-            if (product.Stock == 0)
+            if (product.Stock == 0 || product.Stock is null)
             {
                 product.Status = "Unavailable";
             }
@@ -129,8 +128,7 @@ namespace VegetableShop.Api.Services.Products
                    Name = x.pro.Name,
                    Stock = x.pro.Stock,
                    Price = x.pro.Price,
-                   DateCreated = x.pro.DateCreated,
-                   DateUpdated = x.pro.DateUpdated,
+                   DateCreated = UTCConverter(x.pro.DateCreated),
                    ImagePath = $"{_imagePath}{x.pro.ImagePath}",
                    CategoryName = x.Name,
                    Status = x.pro.Status,
@@ -154,6 +152,7 @@ namespace VegetableShop.Api.Services.Products
             {
                 throw new KeyNotFoundException(Exceptions.ProductNotFound);
             }
+            product.DateCreated = UTCConverter(product.DateCreated);
             return _mapper.Map<ProductDto>(product);
         }
 
@@ -229,6 +228,12 @@ namespace VegetableShop.Api.Services.Products
             _appDbContext.Products.Update(product);
             await _appDbContext.SaveChangesAsync();
             return true;
+        }
+        private DateTime UTCConverter(DateTime dateTime)
+        {
+            TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            DateTime tstTime = TimeZoneInfo.ConvertTime(dateTime, TimeZoneInfo.Local, cstZone);
+            return TimeZoneInfo.ConvertTimeFromUtc(tstTime, cstZone);
         }
     }
 }

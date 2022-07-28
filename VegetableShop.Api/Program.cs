@@ -66,8 +66,11 @@ builder.Services.AddControllers()
                     opts.RegisterValidatorsFromAssembly(typeof(CreateAppUserValidator).Assembly)
                 )
                 .AddJsonOptions(
-                    x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles
-
+                    x =>
+                    {
+                        x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                        x.JsonSerializerOptions.Converters.Add(new DateConverter());
+                    }
                 );
 
 //Configure Identity
