@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
-using VegetableShop.Api.Data.EF;
-using VegetableShop.Api.Dto;
-using VegetableShop.Api.Dto.Products;
 using Microsoft.EntityFrameworkCore;
-using VegetableShop.Api.Data.Entities;
-using VegetableShop.Api.Common;
 using System.Net.Http.Headers;
-using VegetableShop.Api.Services.Storage;
+using VegetableShop.Api.Common;
+using VegetableShop.Api.Data.EF;
+using VegetableShop.Api.Data.Entities;
+using VegetableShop.Api.Dto;
 using VegetableShop.Api.Dto.Page;
+using VegetableShop.Api.Dto.Products;
+using VegetableShop.Api.Services.Storage;
 
 namespace VegetableShop.Api.Services.Products
 {
@@ -59,7 +59,7 @@ namespace VegetableShop.Api.Services.Products
                 using var trans = await _appDbContext.Database.BeginTransactionAsync();
                 try
                 {
-                    product.ImagePath = await SaveFileAsync(createProductDto.Image);
+                    product.ImagePath = await SaveFileAsync(createProductDto.Image, createProductDto.Name.ToLower());
                     await _appDbContext.Products.AddAsync(product);
                     await _appDbContext.SaveChangesAsync();
                     await trans.CommitAsync();
@@ -108,11 +108,14 @@ namespace VegetableShop.Api.Services.Products
         {
             var query = from pro in _appDbContext.Products
                         join cate in _appDbContext.Categories on pro.CategoryId equals cate.Id
-                        where pro.Status == "Available"
                         select new { pro, cate.Name };
+            if (!string.IsNullOrEmpty(request.Status))
+            {
+                query = query.Where(x => x.pro.Status == request.Status);
+            }
             if (!string.IsNullOrEmpty(request.Keyword))
             {
-                query = query.Where(x => x.Name.Contains(request.Keyword));
+                query = query.Where(x => x.pro.Name.ToLower().Contains(request.Keyword));
             }
             if (request.CategoryId != null && request.CategoryId != 0)
             {
@@ -163,7 +166,8 @@ namespace VegetableShop.Api.Services.Products
                 throw new AppException(Exceptions.BadRequest);
             }
             var result = _appDbContext.Products.FirstOrDefault(x => x.Id == id);
-            if (await _appDbContext.Categories.FirstOrDefaultAsync(x => x.Id == updateProductDto.CategoryId) is null)
+            if (updateProductDto.CategoryId == 0
+                || await _appDbContext.Categories.FirstOrDefaultAsync(x => x.Id == updateProductDto.CategoryId) is null)
             {
                 throw new AppException(Exceptions.CategoryNameNotExist);
             }
@@ -177,8 +181,8 @@ namespace VegetableShop.Api.Services.Products
                 {
                     if (updateProductDto.Image is not null)
                     {
-                        product.ImagePath = await SaveFileAsync(updateProductDto.Image);
                         await DeleteFilePathAsync(product.ImagePath);
+                        product.ImagePath = await SaveFileAsync(updateProductDto.Image, updateProductDto.Name.ToLower());
                     }
                     _appDbContext.Products.Update(product);
                     await _appDbContext.SaveChangesAsync();
@@ -192,10 +196,10 @@ namespace VegetableShop.Api.Services.Products
             return true;
         }
 
-        private async Task<string> SaveFileAsync(IFormFile file)
+        private async Task<string> SaveFileAsync(IFormFile file, string name)
         {
             var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
+            var fileName = $"{Guid.NewGuid()}-{name}{Path.GetExtension(originalFileName)}";
             await _storageService.SaveFileAsync(file.OpenReadStream(), fileName);
             return "/" + CONTENT_FOLDER_NAME + "/" + fileName;
         }
@@ -217,19 +221,20 @@ namespace VegetableShop.Api.Services.Products
             return true;
         }
 
-        public async Task<bool> ChangeStatusProduct(int id)
+        public async Task<bool> ChangeStatusProductAsync(int id, Status status)
         {
             var product = await _appDbContext.Products.FirstOrDefaultAsync(x => x.Id == id);
             if (product is null)
             {
                 throw new KeyNotFoundException(Exceptions.ProductNotFound);
             }
-            product.Status = "Unavailable";
+            product.Status = status.GetString();
             _appDbContext.Products.Update(product);
             await _appDbContext.SaveChangesAsync();
             return true;
         }
-        private DateTime UTCConverter(DateTime dateTime)
+
+        private static DateTime UTCConverter(DateTime dateTime)
         {
             TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
             DateTime tstTime = TimeZoneInfo.ConvertTime(dateTime, TimeZoneInfo.Local, cstZone);

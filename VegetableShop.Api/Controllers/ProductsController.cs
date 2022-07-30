@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using VegetableShop.Api.Common;
 using VegetableShop.Api.Dto.Page;
 using VegetableShop.Api.Dto.Products;
 using VegetableShop.Api.Services.Products;
@@ -80,9 +81,23 @@ namespace VegetableShop.Api.Controllers
             {
                 return NotFound();
             }
-            if (await _productService.ChangeStatusProduct(id))
+            if (await _productService.ChangeStatusProductAsync(id, Status.Unavailable))
             {
                 return NoContent();
+            }
+            return BadRequest();
+        }
+
+        [HttpPost("restore/{id}")]
+        public async Task<IActionResult> RestoreAsync(int id)
+        {
+            if (await _productService.GetProductByIdAsync(id) is null)
+            {
+                return NotFound();
+            }
+            if (await _productService.ChangeStatusProductAsync(id, Status.Available))
+            {
+                return Ok();
             }
             return BadRequest();
         }

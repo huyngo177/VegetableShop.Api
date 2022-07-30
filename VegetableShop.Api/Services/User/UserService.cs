@@ -110,13 +110,16 @@ namespace VegetableShop.Api.Services.User
 
         public async Task<PageResult<AppUserDto>> GetAsync(GetUserPageRequest request)
         {
-            var query = _userManager.Users.Where(x => x.IsLocked == false);
+            var query = _userManager.Users;
+            if (request.IsLocked is not null)
+            {
+                query = query.Where(x => x.IsLocked == request.IsLocked);
+            }
             if (!string.IsNullOrEmpty(request.Keyword))
             {
-                query = query.Where(x => x.UserName.Contains(request.Keyword)
+                query = query.Where(x => x.UserName.ToLower().Contains(request.Keyword)
                  || x.PhoneNumber.Contains(request.Keyword));
             }
-
             int totalRow = await query.CountAsync();
 
             var data = await query.Skip((request.PageIndex - 1) * request.PageSize)
