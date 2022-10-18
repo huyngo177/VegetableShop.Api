@@ -12,6 +12,12 @@
     <link href="~/css/customs.css" rel="stylesheet" type="text/css" />
     <script src="~/js/all.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
+    <style>
+        .modal-title {
+            width: 100%;
+            text-align: center;
+        }
+    </style>
 </head>
 <body class="sb-nav-fixed">
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
@@ -31,7 +37,7 @@
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" asp-controller="User" asp-action="Detail" asp-route-id="1">Profile</a></li>
+                    <li><a class="dropdown-item" asp-controller="User" asp-action="Profile" asp-route-username="@User.Identity.Name">Profile</a></li>
                     <li><hr class="dropdown-divider" /></li>
                     <li><a class="dropdown-item" asp-controller="User" asp-action="Logout"> Logout</a></li>
                 </ul>
@@ -43,55 +49,60 @@
             <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                 <div class="sb-sidenav-menu">
                     <div class="nav">
-                        <div class="sb-sidenav-menu-heading">Core</div>
-                        <a class="nav-link" asp-action="Index" asp-controller="Home">
-                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                            Dashboard
-                        </a>
                         <div class="sb-sidenav-menu-heading">System</div>
-                        <a class="nav-link collapsed" asp-action="Index" asp-controller="User">
+
+                        <!--========== Users =============-->
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseUsers"
+                           aria-expanded="false" aria-controls="collapseUsers">
                             <div class="sb-nav-link-icon"><i class="fas fa-user-tie"></i></div>
                             Users
-                        </a>
-                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
-                            <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
-                            Products
                             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
-                        <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
-                            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
-                                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
-                                    Product
-                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                                </a>
-                                <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
-                                    <nav class="sb-sidenav-menu-nested nav">
-                                        <a class="nav-link" asp-action="Index" asp-controller="Product">List</a>
-                                        <a class="nav-link" asp-action="Create" asp-controller="Product">Create</a>
-                                    </nav>
-                                </div>
-                                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
-                                    Category
-                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                                </a>
-                                <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
-                                    <nav class="sb-sidenav-menu-nested nav">
-                                        <a class="nav-link" asp-action="Index" asp-controller="Category">List</a>
-                                        <a class="nav-link" asp-action="Create" asp-controller="Category">Create</a>
-                                    </nav>
-                                </div>
+                        <div class="collapse" id="collapseUsers" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" asp-action="Index" asp-controller="User">Index</a>
+                                <a class="nav-link" asp-action="UsersDeletedList" asp-controller="User">Restore</a>
                             </nav>
                         </div>
+
+                        <!--========== Products =============-->
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseProducts"
+                           aria-expanded="false" aria-controls="collapseProducts">
+                            <div class="sb-nav-link-icon"><i class="fa-solid fa-apple-whole"></i></div>
+                            Products 
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapseProducts" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" asp-action="Index" asp-controller="Product">Index</a>
+                                <a class="nav-link" asp-action="GetProductsDeleted" asp-controller="Product">Restore</a>
+                            </nav>
+                        </div>
+
+                         <!--========== Categories =============-->
+                        <a class="nav-link collapsed" asp-action="Index" asp-controller="Category">
+                            <div class="sb-nav-link-icon"><i class="fa-solid fa-bars-staggered"></i></div>
+                            Categories
+                        </a>
+
+                        <!--========== Orders =============-->
                         <div class="sb-sidenav-menu-heading">Addons</div>
                         <a class="nav-link" asp-action="Index" asp-controller="Order">
                             <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
                             Orders
                         </a>
+
+                        <!--========== Go to Web =============-->
+                        <div class="sb-sidenav-menu-heading">Website</div>
+                        <a class="nav-link" asp-area="" asp-action="Index" asp-controller="UserHome">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Go to Web
+                        </a>
                     </div>
                 </div>
                 <div class="sb-sidenav-footer">
                     <div class="small">Logged in as:</div>
-                    @User.Identity.Name
+                    @User.Identity.Name.ToUpper()
                 </div>
             </nav>
         </div>
@@ -107,11 +118,29 @@
                 </div>
             </footer>
         </div>
+        <div class="modal" tabindex="-1" role="dialog" id="form-modal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+    <script src="~/js/jquery-1.11.1.min.js"></script>
     <script src="~/js/bootstrap.bundle.min.js" crossorigin="anonymous" type="text/javascript"></script>
     <script src="~/js/scripts.js"></script>
     <script src="~/js/simple-datatables@latest.js" crossorigin="anonymous"></script>
     <script src="~/js/datatables-simple-demo.js" type="text/javascript"></script>
+    <script src="~/js/site.js"></script>
+    <script src="~/js/notify.min.js"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

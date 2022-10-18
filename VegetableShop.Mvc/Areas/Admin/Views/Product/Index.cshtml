@@ -47,16 +47,13 @@
                         Stock
                     </th>
                     <th>
-                        DateCreated
+                        Date Created
                     </th>
                     <th>
-                        DateUpdated
+                        Image
                     </th>
                     <th>
-                        ImagePath
-                    </th>
-                    <th>
-                        CategoryName
+                        Category Name
                     </th>
                     <th>
                         Status
@@ -84,9 +81,6 @@
                         </td>
                         <td class="custom-td">
                             @Html.DisplayFor(modelItem => item.DateCreated)
-                        </td>
-                        <td class="custom-td">
-                            @Html.DisplayFor(modelItem => item.DateUpdated)
                         </td>
                         <td class="custom-td">
                             <img src="@item.ImagePath" width="60" height="60">

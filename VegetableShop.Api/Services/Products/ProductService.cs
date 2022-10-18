@@ -51,7 +51,7 @@ namespace VegetableShop.Api.Services.Products
             var product = _mapper.Map<Product>(createProductDto);
             if (product.Stock == 0 || product.Stock is null)
             {
-                product.Status = "Unavailable";
+                product.Status = Status.Unavailable.GetString();
             }
             var init = _appDbContext.Database.CreateExecutionStrategy();
             await init.ExecuteAsync(async () =>

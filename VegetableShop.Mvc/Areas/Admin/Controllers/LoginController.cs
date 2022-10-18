@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -11,6 +11,7 @@ using VegetableShop.Mvc.Models;
 
 namespace VegetableShop.Mvc.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class LoginController : Controller
     {
         private readonly IUserApiClient _userApiClient;
@@ -29,7 +30,7 @@ namespace VegetableShop.Mvc.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(LoginRequest request)
+        public async Task<IActionResult> Index(LoginRequest request, string? returnUrl)
         {
             if (!ModelState.IsValid)
             {
@@ -60,7 +61,16 @@ namespace VegetableShop.Mvc.Areas.Admin.Controllers
                         CookieAuthenticationDefaults.AuthenticationScheme,
                         userPrincipal,
                         authProperties);
-            return RedirectToAction("Index", "Home");
+
+            if (userPrincipal.IsInRole("Admin"))
+            {
+                if (!string.IsNullOrEmpty(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
+                return RedirectToAction("Index", "Home");
+            }
+            return RedirectToAction("Forbidden", "Home");
         }
         private ClaimsPrincipal ValidateToken(string jwtToken)
         {

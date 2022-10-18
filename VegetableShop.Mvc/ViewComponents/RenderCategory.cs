@@ -13,7 +13,7 @@ namespace VegetableShop.Mvc.ViewComponents
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var categories = await _categoryApiClient.SelectAll();
+            var categories = await _categoryApiClient.GetAllAsync();
             return View(categories);
         }
     }

@@ -12,14 +12,17 @@ namespace VegetableShop.Mvc.ApiClient.Role
         private readonly IConfiguration _configuration;
         private readonly HttpClient _client;
         private readonly IMapper _mapper;
-        public RoleApiClient(IConfiguration configuration, IHttpClientFactory httpClientFactory, IMapper mapper)
-            : base(configuration, httpClientFactory, mapper)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public RoleApiClient(IConfiguration configuration, IHttpClientFactory httpClientFactory, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+            : base(configuration, httpClientFactory, mapper, httpContextAccessor)
         {
             _configuration = configuration;
             _clientFactory = httpClientFactory;
             _mapper = mapper;
             _client = _clientFactory.CreateClient();
             _client.BaseAddress = new Uri($"{_configuration["BaseAddress"]}");
+            _httpContextAccessor = httpContextAccessor;
         }
         public async Task<IEnumerable<RoleViewModel>> GetAllAsync()
         {

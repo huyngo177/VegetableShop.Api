@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -15,10 +16,12 @@ namespace VegetableShop.Mvc.Controllers
     {
         private readonly IUserApiClient _userApiClient;
         private readonly IConfiguration _configuration;
-        public AccountController(IUserApiClient userApiClient, IConfiguration configuration)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public AccountController(IUserApiClient userApiClient, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             _userApiClient = userApiClient;
             _configuration = configuration;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet]
@@ -48,12 +51,12 @@ namespace VegetableShop.Mvc.Controllers
             };
             var userPrincipal = ValidateToken(result.Token);
             HttpContext.Response.Cookies.Append(
-                "userId",
-                result.userId.ToString(),
-                new CookieOptions
-                {
-                    Expires = DateTime.Now.AddYears(1)
-                });
+                 "userId",
+                 result.userId.ToString(),
+                 new CookieOptions
+                 {
+                     Expires = DateTime.Now.AddYears(1)
+                 });
             HttpContext.Session.SetString("Token", result.Token);
             await HttpContext.SignInAsync(
                         CookieAuthenticationDefaults.AuthenticationScheme,
@@ -66,7 +69,7 @@ namespace VegetableShop.Mvc.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Login", "Account");
+            return RedirectToAction("Index", "UserHome");
         }
 
         [HttpGet]
@@ -81,8 +84,10 @@ namespace VegetableShop.Mvc.Controllers
             var response = await _userApiClient.CreateAsync(request);
             if (response.IsSuccess)
             {
+                ViewBag.Message = "Create user success.";
                 return RedirectToAction("Login");
             }
+            ViewBag.Message = "Create user fail";
             return View(request);
         }
 

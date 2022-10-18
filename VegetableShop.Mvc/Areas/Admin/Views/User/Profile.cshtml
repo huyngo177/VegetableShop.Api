@@ -1,0 +1,18 @@
+﻿@model VegetableShop.Mvc.Models.User.UserViewModel
+
+@{
+    ViewData["Title"] = "Profile";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+<br />
+<div>
+    <h3 class="page-header text-center">PROFILE</h3>
+    <hr />
+    <div class="card-body" id="adminProfile">
+        @await Html.PartialAsync("_AdminProfilePartialView", Model)
+        <div class="text-center">
+            <a class="btn btn-primary" onclick="showInPopup('@Url.Action("Update","User",new {id=Model.Id},Context.Request.Scheme)','Update Profile')">Update profile</a>
+            <a class="btn btn-success" asp-action="Index" asp-controller="User">Back</a>
+        </div>
+    </div>
+</div>

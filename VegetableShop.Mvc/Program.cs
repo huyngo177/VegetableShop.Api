@@ -1,4 +1,7 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 using VegetableShop.Api.Mapper.User;
 using VegetableShop.Mvc.ApiClient.Carts;
 using VegetableShop.Mvc.ApiClient.Categories;
@@ -12,7 +15,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: "_allowSpecificOrigins",
                       policy =>
                       {
-                          policy.WithOrigins("https://localhost:7230", "https://localhost:7157").AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin();
+                          policy.WithOrigins("https://localhost:7230", "https://localhost:7157")
+                                .AllowAnyMethod()
+                                .AllowAnyHeader()
+                                .AllowAnyOrigin();
                       });
 });
 builder.Services.AddHttpClient();
@@ -20,9 +26,15 @@ builder.Services.AddHttpClient();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Account/Login";
-        options.AccessDeniedPath = "/User/Forbidden/";
+        options.LoginPath = "/Admin/Login";
+        options.AccessDeniedPath = "/Admin/Home/Forbidden/";
     });
+
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    options.CheckConsentNeeded = context => false;
+    options.MinimumSameSitePolicy = SameSiteMode.None;
+});
 
 builder.Services.AddMvc(options =>
 {
@@ -30,12 +42,19 @@ builder.Services.AddMvc(options =>
 });
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
+
+builder.Services.AddDistributedMemoryCache();
+
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.IsEssential = true;
+    options.Cookie.HttpOnly = true;
 });
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<IUserApiClient, UserApiClient>();
 builder.Services.AddScoped<IProductApiClient, ProductApiClient>();
 builder.Services.AddScoped<IRoleApiClient, RoleApiClient>();
@@ -62,6 +81,8 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+app.UseCookiePolicy();
+
 app.UseSession();
 
 app.UseMvc(routes =>
@@ -74,14 +95,6 @@ app.UseMvc(routes =>
         name: "default",
         template: "{controller=UserHome}/{action=Index}/{id?}");
 });
-
-//app.MapControllerRoute(
-//    name: "MyArea",
-//    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
-
-//app.MapControllerRoute(
-//    name: "default",
-//    pattern: "{controller=UserHome}/{action=Index}/{id?}");
 
 app.UseCors("_allowSpecificOrigins");
 app.Run();

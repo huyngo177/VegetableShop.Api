@@ -5,18 +5,6 @@ namespace VegetableShop.Mvc.Models.User
 {
     public class UpdateUserRequest
     {
-        [Required(ErrorMessage = "Please enter current password")]
-        [DisplayName("Current Password")]
-        public string CurrentPassword { get; set; }
-
-        [Required(ErrorMessage = "Please enter new password")]
-        [DisplayName("New Password")]
-        public string NewPassword { get; set; }
-
-        [Compare("NewPassword", ErrorMessage = "Confirm password must match new password")]
-        [DisplayName("Confirm Password")]
-        public string ConfirmPassword { get; set; }
-
         [Required(ErrorMessage = "Please enter first name")]
         [StringLength(20, ErrorMessage = "Firstname must less 20 characters and greater than 2 characters", MinimumLength = 2)]
         public string FirstName { get; set; }

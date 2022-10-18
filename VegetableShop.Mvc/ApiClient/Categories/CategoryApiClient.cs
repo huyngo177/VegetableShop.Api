@@ -12,23 +12,20 @@ namespace VegetableShop.Mvc.ApiClient.Categories
         private readonly IConfiguration _configuration;
         private readonly HttpClient _client;
         private readonly IMapper _mapper;
-        public CategoryApiClient(IConfiguration configuration, IHttpClientFactory httpClientFactory, IMapper mapper)
-            : base(configuration, httpClientFactory, mapper)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public CategoryApiClient(IConfiguration configuration, IHttpClientFactory httpClientFactory, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+            : base(configuration, httpClientFactory, mapper,httpContextAccessor)
         {
             _configuration = configuration;
             _clientFactory = httpClientFactory;
             _mapper = mapper;
             _client = _clientFactory.CreateClient();
             _client.BaseAddress = new Uri($"{_configuration["BaseAddress"]}");
+            _httpContextAccessor = httpContextAccessor;
         }
         public async Task<IEnumerable<CategoryViewModel>> GetAllAsync()
         {
             return await GetAsync<IEnumerable<CategoryViewModel>>("api/categories");
-        }
-
-        public async Task<IList<Category>> SelectAll()
-        {
-            return await GetAsync<IList<Category>>("api/categories");
         }
 
         public async Task<Response> DeleteAsync(int id)

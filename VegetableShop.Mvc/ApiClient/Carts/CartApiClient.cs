@@ -15,28 +15,28 @@ namespace VegetableShop.Mvc.ApiClient.Carts
         private readonly IMapper _mapper;
         private readonly string _imagePath;
         private readonly IProductApiClient _productApiClient;
-        private readonly IHttpContextAccessor context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly HttpClient _client;
 
-        public CartApiClient(IConfiguration configuration, 
-            IHttpClientFactory httpClientFactory, 
-            IMapper mapper, IProductApiClient productApiClient, 
-            IHttpContextAccessor context)
-            : base(configuration, httpClientFactory, mapper)
+        public CartApiClient(IConfiguration configuration,
+            IHttpClientFactory httpClientFactory,
+            IMapper mapper, IProductApiClient productApiClient,
+            IHttpContextAccessor httpContextAccessor)
+            : base(configuration, httpClientFactory, mapper, httpContextAccessor)
         {
             _configuration = configuration;
             _clientFactory = httpClientFactory;
             _mapper = mapper;
             _imagePath = $"{_configuration["BaseAddress"]}";
             _productApiClient = productApiClient;
-            this.context = context;
+            _httpContextAccessor = httpContextAccessor;
             _client = _clientFactory.CreateClient();
             _client.BaseAddress = new Uri($"{_configuration["BaseAddress"]}");
         }
 
         public List<CartItemViewModel> GetListItem()
         {
-            var session = context.HttpContext.Session.GetString("CartSession");
+            var session = _httpContextAccessor.HttpContext.Session.GetString("CartSession");
             List<CartItemViewModel> carts = new List<CartItemViewModel>();
             if (!string.IsNullOrEmpty(session))
             {
@@ -47,7 +47,7 @@ namespace VegetableShop.Mvc.ApiClient.Carts
 
         public async Task<List<CartItemViewModel>> AddToCart(int id, int quantity)
         {
-            var session = context.HttpContext.Session.GetString("CartSession");
+            var session = _httpContextAccessor.HttpContext.Session.GetString("CartSession");
             var product = await _productApiClient.GetProductByIdAsync(id);
             List<CartItemViewModel> currentCart = new List<CartItemViewModel>();
             if (!string.IsNullOrEmpty(session))
@@ -72,13 +72,13 @@ namespace VegetableShop.Mvc.ApiClient.Carts
 
             currentCart.Add(cartItem);
 
-            context.HttpContext.Session.SetString("CartSession", JsonConvert.SerializeObject(currentCart));
+            _httpContextAccessor.HttpContext.Session.SetString("CartSession", JsonConvert.SerializeObject(currentCart));
             return currentCart;
         }
 
         public IEnumerable<CartItemViewModel> UpdateCart(int id, int quantity)
         {
-            var session = context.HttpContext.Session.GetString("CartSession");
+            var session = _httpContextAccessor.HttpContext.Session.GetString("CartSession");
 
             List<CartItemViewModel> currentCart = new List<CartItemViewModel>();
             if (!string.IsNullOrEmpty(session))
@@ -97,13 +97,13 @@ namespace VegetableShop.Mvc.ApiClient.Carts
                     item.Quantity = quantity;
                 }
             }
-            context.HttpContext.Session.SetString("CartSession", JsonConvert.SerializeObject(currentCart));
+            _httpContextAccessor.HttpContext.Session.SetString("CartSession", JsonConvert.SerializeObject(currentCart));
             return currentCart;
         }
 
         public async Task<CreateResponse> Checkout(UserInfoRequest userInfoRequest)
         {
-            _ = int.TryParse(context?.HttpContext?.Request.Cookies["userId"], out int id);
+            _ = int.TryParse(_httpContextAccessor?.HttpContext?.Request.Cookies["userId"], out int id);
             var user = await GetAsync<UserViewModel>($"api/users/{id}");
 
             var currentItem = GetCheckoutViewModel();
@@ -136,7 +136,7 @@ namespace VegetableShop.Mvc.ApiClient.Carts
 
             //foreach (var item in currentItem.CartItems)
             //{
-                
+
             //}
             var response = await _client.PostAsync("api/orders", HandleRequest(createOrderDto));
             if (response.IsSuccessStatusCode)
@@ -151,7 +151,7 @@ namespace VegetableShop.Mvc.ApiClient.Carts
 
         public CheckoutViewModel GetCheckoutViewModel()
         {
-            var session = context.HttpContext.Session.GetString("CartSession");
+            var session = _httpContextAccessor.HttpContext.Session.GetString("CartSession");
             List<CartItemViewModel> currentCart = new List<CartItemViewModel>();
             if (session != null)
             {
@@ -167,11 +167,11 @@ namespace VegetableShop.Mvc.ApiClient.Carts
 
         public void RemoveCart()
         {
-            context.HttpContext.Session.Remove("CartSession");
+            _httpContextAccessor.HttpContext.Session.Remove("CartSession");
         }
         public List<CartItemViewModel> RemoveItemInCart(int id)
         {
-            var session = context.HttpContext.Session.GetString("CartSession");
+            var session = _httpContextAccessor.HttpContext.Session.GetString("CartSession");
             List<CartItemViewModel> currentCart = new List<CartItemViewModel>();
             if (session != null)
             {
@@ -185,7 +185,7 @@ namespace VegetableShop.Mvc.ApiClient.Carts
                     break;
                 }
             }
-            context.HttpContext.Session.SetString("CartSession", JsonConvert.SerializeObject(currentCart));
+            _httpContextAccessor.HttpContext.Session.SetString("CartSession", JsonConvert.SerializeObject(currentCart));
             return currentCart;
         }
     }

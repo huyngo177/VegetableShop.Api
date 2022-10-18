@@ -7,6 +7,7 @@ using VegetableShop.Mvc.Models.Role;
 
 namespace VegetableShop.Mvc.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     [Authorize]
     public class RoleController : Controller
     {

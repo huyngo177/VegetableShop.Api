@@ -5,7 +5,7 @@ using VegetableShop.Mvc.Models;
 
 namespace VegetableShop.Mvc.Areas.Admin.Controllers
 {
-    [Authorize]
+    [Area("Admin")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -15,12 +15,8 @@ namespace VegetableShop.Mvc.Areas.Admin.Controllers
             _logger = logger;
         }
 
+        [Authorize(Roles = "Admin")]
         public IActionResult Index()
-        {
-            return View();
-        }
-
-        public IActionResult Privacy()
         {
             return View();
         }
@@ -29,6 +25,11 @@ namespace VegetableShop.Mvc.Areas.Admin.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public IActionResult Forbidden()
+        {
+            return View();
         }
     }
 }

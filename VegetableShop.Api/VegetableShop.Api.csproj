@@ -39,4 +39,8 @@
     <Folder Include="wwwroot\Images\Products\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\VegetableShop.Integration\VegetableShop.Integration.csproj" />
+  </ItemGroup>
+
 </Project>

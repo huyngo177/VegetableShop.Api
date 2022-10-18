@@ -7,7 +7,7 @@ using VegetableShop.Mvc.Models.Products;
 
 namespace VegetableShop.Mvc.Areas.Admin.Controllers
 {
-  
+    [Area("Admin")]
     public class ProductController : Controller
     {
         private readonly IProductApiClient _productApiClient;

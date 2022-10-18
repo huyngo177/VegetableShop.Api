@@ -3,6 +3,7 @@
     public static class SystemConstants
     {
         public const string ConnectionString = "DefaultConnection";
+        public const string AdminName = "Admin";
     }
     public enum Status
     {

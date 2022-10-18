@@ -12,7 +12,6 @@ using VegetableShop.Api.Data.Entities;
 using VegetableShop.Api.Dto;
 using VegetableShop.Api.Dto.Page;
 using VegetableShop.Api.Dto.User;
-
 namespace VegetableShop.Api.Services.User
 {
     public class UserService : IUserService
@@ -100,6 +99,10 @@ namespace VegetableShop.Api.Services.User
         public async Task<bool> DeLeteAsync(int id)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
+            if (await _userManager.IsInRoleAsync(user, Roles.Admin))
+            {
+                return false;
+            }
             var result = await _userManager.DeleteAsync(user);
             if (result.Succeeded)
             {
@@ -108,25 +111,22 @@ namespace VegetableShop.Api.Services.User
             return false;
         }
 
-        public async Task<PageResult<AppUserDto>> GetAsync(GetUserPageRequest request)
+        public async Task<PaginationResult<AppUserDto>> GetAsync(PageDto pageDto)
         {
-            var query = _userManager.Users;
-            if (request.IsLocked is not null)
-            {
-                query = query.Where(x => x.IsLocked == request.IsLocked);
-            }
-            if (!string.IsNullOrEmpty(request.Keyword))
-            {
-                query = query.Where(x => x.UserName.ToLower().Contains(request.Keyword)
-                 || x.PhoneNumber.Contains(request.Keyword));
-            }
-            int totalRow = await query.CountAsync();
+            List<AppUser> query = await _appDbContext.Users.Where(x => x.UserName != SystemConstants.AdminName).ToListAsync();
 
-            var data = await query.Skip((request.PageIndex - 1) * request.PageSize)
-               .Take(request.PageSize)
-               .ToListAsync();
+            if (pageDto.IsLocked)
+            {
+                query = query.Where(x => x.IsLocked == pageDto.IsLocked).ToList();
+            }
+            if (!string.IsNullOrEmpty(pageDto.Keyword))
+            {
+                query = query.Where(x => x.UserName.ToLower().Contains(pageDto.Keyword.ToLower())
+                 || x.PhoneNumber.Contains(pageDto.Keyword)).ToList();
+            }
+            query = DoSort(query, pageDto.SortProperty, pageDto.SortOrder);
             var result = new List<AppUserDto>();
-            foreach (var user in data)
+            foreach (var user in query)
             {
                 var roles = await _userManager.GetRolesAsync(user);
                 var userDto = _mapper.Map<AppUserDto>(user);
@@ -134,13 +134,8 @@ namespace VegetableShop.Api.Services.User
                 result.Add(userDto);
             }
 
-            var pageResult = new PageResult<AppUserDto>()
-            {
-                TotalRecords = totalRow,
-                PageIndex = request.PageIndex,
-                PageSize = request.PageSize,
-                Items = result
-            };
+            var pageResult = new PaginationResult<AppUserDto>(result, pageDto.PageIndex, pageDto.PageSize);           ;
+            
             return pageResult;
         }
 
@@ -259,6 +254,10 @@ namespace VegetableShop.Api.Services.User
 
         public async Task<bool> RevokeAsync(string username)
         {
+            if (username.ToUpper() == SystemConstants.AdminName.ToUpper())
+            {
+                return false;
+            }
             var user = await _userManager.FindByNameAsync(username);
             user.RefreshToken = null;
             await _userManager.UpdateAsync(user);
@@ -267,7 +266,7 @@ namespace VegetableShop.Api.Services.User
 
         public async Task RevokeAllAsync()
         {
-            var users = await _userManager.Users.ToListAsync();
+            var users = await _userManager.Users.Where(x => x.UserName != SystemConstants.AdminName).ToListAsync();
             foreach (var user in users)
             {
                 user.RefreshToken = null;
@@ -286,6 +285,10 @@ namespace VegetableShop.Api.Services.User
                 throw new AppException(Exceptions.NullId);
             }
             var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user.IsLocked)
+            {
+                return false;
+            }
             _mapper.Map(updateUserDto, user);
             var init = _appDbContext.Database.CreateExecutionStrategy();
             async Task<bool> Values()
@@ -355,10 +358,15 @@ namespace VegetableShop.Api.Services.User
             return principal;
         }
 
-        public async Task<bool> ChangeLockedStatusAsync(int id)
+        public async Task<bool> ChangeLockedStatusAsync(int id, bool isLocked)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
-            user.IsLocked = true;
+            if (await _userManager.IsInRoleAsync(user, Roles.Admin))
+            {
+                return false;
+            }
+            user.IsLocked = isLocked;
+            user.RefreshToken = null;
             var result = await _userManager.UpdateAsync(user);
             if (result.Succeeded)
             {
@@ -382,6 +390,10 @@ namespace VegetableShop.Api.Services.User
                 throw new AppException(Exceptions.NullId);
             }
             var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user.IsLocked)
+            {
+                return false;
+            }
             var init = _appDbContext.Database.CreateExecutionStrategy();
             async Task<bool> Values()
             {
@@ -406,6 +418,50 @@ namespace VegetableShop.Api.Services.User
                 throw new AppException(Exceptions.CurrentPasswordInvalid);
             }
             return await init.ExecuteAsync(Values);
+        }
+
+        public async Task<IEnumerable<string>> GetRolesByUserIdAsync(int id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            return await _userManager.GetRolesAsync(user);
+        }
+
+        private List<AppUser> DoSort(List<AppUser> query, string sortProperty, SortOrder sortOrder)
+        {
+            if (sortProperty.ToLower() == "username")
+            {
+                if (sortOrder == SortOrder.Ascending)
+                {
+                    query = query.OrderBy(x => x.UserName).ToList();
+                }
+                else
+                {
+                    query = query.OrderByDescending(x => x.UserName).ToList();
+                }
+            }
+            else if (sortProperty.ToLower() == "id")
+            {
+                if (sortOrder == SortOrder.Ascending)
+                {
+                    query = query.OrderBy(x => x.Id).ToList();
+                }
+                else
+                {
+                    query = query.OrderByDescending(x => x.Id).ToList();
+                }
+            }
+            else
+            {
+                if (sortOrder == SortOrder.Ascending)
+                {
+                    query = query.OrderBy(x => x.Email).ToList();
+                }
+                else
+                {
+                    query = query.OrderByDescending(x => x.Email).ToList();
+                }
+            }
+            return query;
         }
     }
 }

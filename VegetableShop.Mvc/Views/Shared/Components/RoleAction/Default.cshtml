@@ -1,0 +1,29 @@
+﻿@model IEnumerable<string>;
+
+<div>
+    <div>
+        @foreach (var item in Model)
+        {
+            <div class="row">
+                <input type="radio" asp-for="@item" value="@item">
+                <label asp-for="@item"></label>
+                <a asp-action="RemoveRole" asp-route-role="@item" method="post" class="btn btn-danger"></a>
+                <br>
+            </div>
+        }
+    </div>
+    <div>
+        <form asp-action="AssignRole" method="post">
+            <label for="Assign Role" class="control-label"></label>
+            <select for="Add Role">
+                @foreach (var item in Model)
+                {
+                    <option value="@item">@item</option>
+                }
+            </select>
+            <div>
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

@@ -12,15 +12,19 @@ namespace VegetableShop.Mvc.ApiClient.Products
         private readonly IConfiguration _configuration;
         private readonly HttpClient _client;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ProductApiClient(IConfiguration configuration, IHttpClientFactory httpClientFactory, IMapper mapper)
-            : base(configuration, httpClientFactory, mapper)
+        public ProductApiClient(IConfiguration configuration,
+            IHttpClientFactory httpClientFactory, IMapper mapper,
+            IHttpContextAccessor httpContextAccessor)
+            : base(configuration, httpClientFactory, mapper, httpContextAccessor)
         {
             _configuration = configuration;
             _clientFactory = httpClientFactory;
             _mapper = mapper;
             _client = _clientFactory.CreateClient();
             _client.BaseAddress = new Uri($"{_configuration["BaseAddress"]}");
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<CreateResponse> CreateAsync(CreateProductRequest request)
@@ -66,14 +70,14 @@ namespace VegetableShop.Mvc.ApiClient.Products
 
         public async Task<PageResult<ProductViewModel>> GetAllAsync(GetProductPageRequest request)
         {
-            var products = await GetAsync<PageResult<ProductViewModel>>(
-                $"api/products/page?pageIndex={request.PageIndex}&pageSize={request.PageSize} &keyword={request.Keyword}&categoryId={request.CategoryId}");
+            var products = await GetContainDateAsync<PageResult<ProductViewModel>>(
+                $"api/products/page?pageIndex={request.PageIndex}&pageSize={request.PageSize}&keyword={request.Keyword}&categoryId={request.CategoryId}&status={request.Status}");
             return products;
         }
 
         public async Task<ProductViewModel> GetProductByIdAsync(int id)
         {
-            var product = await GetAsync<ProductViewModel>($"api/products/{id}");
+            var product = await GetContainDateAsync<ProductViewModel>($"api/products/{id}");
             return product;
         }
 
@@ -90,7 +94,7 @@ namespace VegetableShop.Mvc.ApiClient.Products
 
         public async Task<IEnumerable<ProductViewModel>> GetProductByCategoryIdAsync(int id)
         {
-            return await GetAsync<IEnumerable<ProductViewModel>>($"api/products/categories/{id}");
+            return await GetContainDateAsync<IEnumerable<ProductViewModel>>($"api/products/categories/{id}");
         }
     }
 }

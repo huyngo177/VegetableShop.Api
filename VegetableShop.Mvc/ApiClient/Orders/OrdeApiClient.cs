@@ -13,21 +13,22 @@ namespace VegetableShop.Mvc.ApiClient.Orders
         private readonly IMapper _mapper;
         private readonly string _imagePath;
         private readonly IOrderApiClient _productApiClient;
-        private readonly IHttpContextAccessor context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly HttpClient _client;
 
-        public OrdeApiClient(IConfiguration configuration, IHttpClientFactory httpClientFactory, IMapper mapper, IOrderApiClient orderApiClient, IHttpContextAccessor context)
-        : base(configuration, httpClientFactory, mapper)
+        public OrdeApiClient(IConfiguration configuration, IHttpClientFactory httpClientFactory, IMapper mapper, IOrderApiClient orderApiClient, IHttpContextAccessor httpContextAccessor)
+        : base(configuration, httpClientFactory, mapper, httpContextAccessor)
         {
             _configuration = configuration;
             _clientFactory = httpClientFactory;
+            _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
             _client = _clientFactory.CreateClient();
             _client.BaseAddress = new Uri($"{_configuration["BaseAddress"]}");
         }
         public async Task<CreateResponse> CreateAsync()
         {
-            var session = context.HttpContext.Session.GetString("CartSession");
+            var session = _httpContextAccessor.HttpContext.Session.GetString("CartSession");
             List<CartItemViewModel> currentCart = new List<CartItemViewModel>();
             if (session != null)
             {

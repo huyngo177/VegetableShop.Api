@@ -18,6 +18,7 @@ namespace VegetableShop.Mvc.Models.User
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
+        [Required(ErrorMessage = "Please enter confirm password")]
         [Compare("Password", ErrorMessage = "Confirm password must match password")]
         [DataType(DataType.Password)]
         public string ConfirmPassword { get; set; }

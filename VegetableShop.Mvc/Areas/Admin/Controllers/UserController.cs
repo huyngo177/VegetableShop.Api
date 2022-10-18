@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using VegetableShop.Api.Dto.Page;
 using VegetableShop.Mvc.ApiClient.User;
+using VegetableShop.Mvc.Models.Page;
 using VegetableShop.Mvc.Models.User;
 
 namespace VegetableShop.Mvc.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     [Authorize]
     public class UserController : Controller
     {
@@ -20,23 +21,78 @@ namespace VegetableShop.Mvc.Areas.Admin.Controllers
             _mapper = mapper;
         }
 
-        public async Task<IActionResult> Index(string keyword, int pageIndex = 1, int pageSize = 5)
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<IActionResult> Index(string keyword, SortOrder sortOrder = 0, int pageIndex = 1, int pageSize = 5, string sortExpression = "id")
         {
-            var request = new GetUserPageRequest()
+            SortItems sortModel = new SortItems();
+            sortModel.ApplySort(sortExpression);
+
+            ViewBag.Keyword = keyword;
+            var users = await _userApiClient.GetAllAsync(new PageViewModel()
             {
+                SortProperty = sortExpression,
+                SortOrder = sortOrder,
                 Keyword = keyword,
                 PageIndex = pageIndex,
-                PageSize = pageSize
-            };
-            var users = await _userApiClient.GetAllAsync(request);
+                PageSize = pageSize,
+                IsLocked = false
+            });
+
+            var pager = new Pager(users.TotalRecords, pageIndex, pageSize);
+            pager.SortExpression = sortExpression;
+            ViewBag.Pager = pager;
+
+            TempData["CurrentPage"] = pageIndex;
+            return View(users);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<IActionResult> Sort(string keyword, SortOrder sortOrder = 0, int pageIndex = 1, int pageSize = 5, string sortExpression = "id")
+        {
+            return Json(new
+            {
+                isValid = true,
+                html = Helper.RenderRazorViewToString(
+                    this,
+                    "_IndexPartialView",
+                    await _userApiClient.GetAllAsync(new PageViewModel()
+                    {
+                        SortProperty = sortExpression,
+                        SortOrder = sortOrder,
+                        Keyword = keyword,
+                        PageIndex = pageIndex,
+                        PageSize = pageSize,
+                        IsLocked = false
+                    }))
+            });
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<IActionResult> UsersDeletedList(string keyword, int pageIndex = 1, int pageSize = 5, string sortExpression = "id")
+        {
+            var users = await _userApiClient.GetAllAsync(new PageViewModel()
+            {
+                SortProperty = sortExpression,
+                Keyword = keyword,
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                IsLocked = true
+            });
             return View(users);
         }
 
         [HttpGet]
         public async Task<IActionResult> Detail(int id)
         {
-            var user = await _userApiClient.GetUserByIdAsync(id);
-            return View(user);
+            return View(await _userApiClient.GetUserByIdAsync(id));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Profile(string username)
+        {
+            return View(await _userApiClient.GetUserByNameAsync(username));
         }
 
         [HttpGet]
@@ -54,8 +110,10 @@ namespace VegetableShop.Mvc.Areas.Admin.Controllers
             var response = await _userApiClient.CreateAsync(request);
             if (response.IsSuccess)
             {
+                TempData["Message"] = "Create user success";
                 return RedirectToAction("Index");
             }
+            TempData["Error"] = "Create user fail";
             return View(request);
         }
 
@@ -79,11 +137,41 @@ namespace VegetableShop.Mvc.Areas.Admin.Controllers
             var response = await _userApiClient.UpdateAsync(id, request);
             if (response.IsSuccess)
             {
-                return RedirectToAction("Detail", new { id });
+                var user = await _userApiClient.GetUserByIdAsync(id);
+                return Json(new
+                {
+                    isValid = true,
+                    html = Helper.RenderRazorViewToString(this, "_AdminProfilePartialView",
+                    user)
+                });
             }
-            return View(request);
+            return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "Update", request) });
         }
 
+        [HttpGet]
+        public async Task<IActionResult> UpdatePassword(int id)
+        {
+            if (await _userApiClient.GetUserByIdAsync(id) is not null)
+            {
+                return View();
+            }
+            return View("Index");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdatePassword(int id, UpdatePasswordRequest request)
+        {
+            var response = await _userApiClient.UpdatePasswordAsync(id, request);
+            if (response.IsSuccess)
+            {
+                var user = await _userApiClient.GetUserByIdAsync(id);
+                return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "_AdminProfilePartialView", user) });
+            }
+            return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "UpdatePassword", request) });
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
@@ -91,9 +179,95 @@ namespace VegetableShop.Mvc.Areas.Admin.Controllers
             var response = await _userApiClient.DeleteAsync(id);
             if (response.IsSuccess)
             {
-                return RedirectToAction("Index");
+                return Json(new
+                {
+                    isValid = true,
+                    html = Helper.RenderRazorViewToString(this, "_UsersDeletedListPartialView",
+                    await _userApiClient.GetAllAsync(new PageViewModel
+                    {
+                        PageIndex = 1,
+                        PageSize = 5,
+                        IsLocked = true
+                    }))
+                });
             }
-            return View("Index", new { message = response.Message });
+            return Json(new
+            {
+                isValid = false,
+                html = Helper.RenderRazorViewToString(this, "_UsersDeletedListPartialView",
+                    await _userApiClient.GetAllAsync(new PageViewModel
+                    {
+                        PageIndex = 1,
+                        PageSize = 5,
+                        IsLocked = true
+                    }))
+            });
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Lock(int id)
+        {
+            var response = await _userApiClient.LockAsync(id);
+            if (response.IsSuccess)
+            {
+                return Json(new
+                {
+                    isValid = true,
+                    html = Helper.RenderRazorViewToString(this, "_IndexPartialView",
+                    await _userApiClient.GetAllAsync(new PageViewModel
+                    {
+                        PageIndex = 1,
+                        PageSize = 5,
+                        IsLocked = false
+                    }))
+                });
+            }
+            return Json(new
+            {
+                isValid = false,
+                html = Helper.RenderRazorViewToString(this, "_IndexPartialView",
+                    await _userApiClient.GetAllAsync(new PageViewModel
+                    {
+                        PageIndex = 1,
+                        PageSize = 5,
+                        IsLocked = false
+                    }))
+            });
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RestoreLockedStatus(int id)
+        {
+            var response = await _userApiClient.RestoreLockedStatusAsync(id);
+            if (response.IsSuccess)
+            {
+                return Json(new
+                {
+                    isValid = true,
+                    html = Helper.RenderRazorViewToString(this, "_UsersDeletedListPartialView",
+                    await _userApiClient.GetAllAsync(new PageViewModel
+                    {
+                        PageIndex = 1,
+                        PageSize = 5,
+                        IsLocked = true
+                    }))
+                });
+            }
+            return Json(new
+            {
+                isValid = false,
+                html = Helper.RenderRazorViewToString(this, "_UsersDeletedListPartialView",
+                    await _userApiClient.GetAllAsync(new PageViewModel
+                    {
+                        PageIndex = 1,
+                        PageSize = 5,
+                        IsLocked = true
+                    }))
+            });
         }
 
         [HttpGet]
@@ -103,11 +277,95 @@ namespace VegetableShop.Mvc.Areas.Admin.Controllers
             return RedirectToAction("Index", "Login");
         }
 
-        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Revoke()
         {
             await _userApiClient.RevokeAsync();
-            return View();
+            return Json(new
+            {
+                isValid = true,
+                html = Helper.RenderRazorViewToString(this, "_IndexPartialView",
+                await _userApiClient.GetAllAsync(new PageViewModel
+                {
+                    SortProperty = "id",
+                    SortOrder = 0,
+                    PageIndex = 1,
+                    PageSize = 5,
+                    IsLocked = false
+                }))
+            });
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RevoleByUsername(string username)
+        {
+            var response = await _userApiClient.RevokeByUsernameAsync(username);
+            var users = await _userApiClient.GetAllAsync(new PageViewModel
+            {
+                SortProperty = "id",
+                SortOrder = 0,
+                PageIndex = 1,
+                PageSize = 5,
+                IsLocked = false
+            });
+            if (response.IsSuccess)
+            {
+                return Json(new
+                {
+                    isValid = true,
+                    html = Helper.RenderRazorViewToString(this, "_IndexPartialView",
+                    users
+                )
+                });
+            }
+            return Json(new
+            {
+                isValid = false,
+                html = Helper.RenderRazorViewToString(this, "_IndexPartialView",
+                users
+                )
+            });
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<IActionResult> GetRole(int id)
+        {
+            return View(await _userApiClient.GetRolesByUserIdAsync(id));
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignRole(int id, string role)
+        {
+            var response = await _userApiClient.AssignRoleAsync(id, role);
+            if (response.IsSuccess)
+            {
+                TempData["Message"] = $"Assign role user with {id} success";
+                return View("Index");
+            }
+            TempData["Error"] = $"Assign role user with {id} fail";
+            return View("Update", new { role });
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveRole(int id, string role)
+        {
+            var response = await _userApiClient.RemoveRoleAsync(id, role);
+            if (response.IsSuccess)
+            {
+                TempData["Message"] = $"Remove role user with {id} success";
+                return View("Index");
+            }
+            TempData["Error"] = $"Remove role user with {id} fail";
+            return View("Update", new { role });
         }
     }
 }

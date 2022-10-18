@@ -6,7 +6,7 @@ using VegetableShop.Api.Services.User;
 
 namespace VegetableShop.Api.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -31,10 +31,11 @@ namespace VegetableShop.Api.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("page")]
-        public async Task<IActionResult> GetAsync([FromQuery] GetUserPageRequest request)
+        public async Task<IActionResult> GetAsync([FromQuery] PageDto pageDto)
         {
-            return Ok(await _userService.GetAsync(request));
+            return Ok(await _userService.GetAsync(pageDto));
         }
 
         [HttpGet("{id}")]
@@ -45,6 +46,21 @@ namespace VegetableShop.Api.Controllers
                 return BadRequest();
             }
             var user = await _userService.GetUserByIdAsync(id);
+            if (user is null)
+            {
+                return NotFound();
+            }
+            return Ok(user);
+        }
+
+        [HttpGet("username")]
+        public async Task<IActionResult> GetUserByNameAsync([FromQuery]string username)
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                return BadRequest();
+            }
+            var user = await _userService.GetUserByNameAsync(username);
             if (user is null)
             {
                 return NotFound();
@@ -78,6 +94,22 @@ namespace VegetableShop.Api.Controllers
             return BadRequest();
         }
 
+        [Authorize(Roles = "Admin")]
+        [HttpGet("{id}/lock")]
+        public async Task<IActionResult> LockAsync(int id)
+        {
+            if (await _userService.GetUserByIdAsync(id) is null)
+            {
+                return NotFound();
+            }
+            if (await _userService.ChangeLockedStatusAsync(id, true))
+            {
+                return NoContent();
+            }
+            return BadRequest();
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
@@ -85,13 +117,45 @@ namespace VegetableShop.Api.Controllers
             {
                 return NotFound();
             }
-            if (await _userService.ChangeLockedStatusAsync(id))
+            if (await _userService.DeLeteAsync(id))
             {
                 return NoContent();
             }
             return BadRequest();
         }
 
+        [Authorize(Roles = "Admin")]
+        [HttpGet("{id}/restore-locked-status")]
+        public async Task<IActionResult> RestoreLockedStatusAsync(int id)
+        {
+            if (await _userService.GetUserByIdAsync(id) is null)
+            {
+                return NotFound();
+            }
+            if (await _userService.ChangeLockedStatusAsync(id, false))
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("{id}/roles")]
+        public async Task<IActionResult> GetRolesByUserIdAsync(int id)
+        {
+            if (await _userService.GetUserByIdAsync(id) is null)
+            {
+                return NotFound();
+            }
+            var roles = await _userService.GetRolesByUserIdAsync(id);
+            if (roles is not null)
+            {
+                return Ok(roles);
+            }
+            return BadRequest();
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}/assign-role")]
         [AllowAnonymous]
         public async Task<IActionResult> AssignRoleAsync(int id, [FromBody] string role)
@@ -107,7 +171,8 @@ namespace VegetableShop.Api.Controllers
             return BadRequest();
         }
 
-        [HttpDelete("{id}/remove-role")]
+        [Authorize(Roles = "Admin")]
+        [HttpPost("{id}/remove-role")]
         public async Task<IActionResult> RemoveRoleAsync(int id, [FromBody] string role)
         {
             if (await _userService.GetUserByIdAsync(id) is null)
@@ -132,6 +197,7 @@ namespace VegetableShop.Api.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("revoke/{username}")]
         public async Task<IActionResult> RevokeAsync(string username)
         {
@@ -146,6 +212,7 @@ namespace VegetableShop.Api.Controllers
             return BadRequest();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("revokes")]
         public async Task<IActionResult> RevokeAllAsync()
         {

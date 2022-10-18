@@ -1,7 +1,7 @@
 ﻿@model VegetableShop.Mvc.Models.User.CreateUserRequest
 
 @{
-    Layout = "";
+    Layout = null;
 }
 
 <!DOCTYPE html>
@@ -13,10 +13,13 @@
     <meta name="description" content="" />
     <meta name="author" content="" />
     <title>Register</title>
-    <link href="~/css/styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/client/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="~/client/css/style.css" type="text/css">
+    <link href="~/css/styles.css" rel="stylesheet" type="text/css" />
+    <link href="~/css/customs.css" rel="stylesheet" type="text/css" />
     <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
 </head>
-<body class="bg-primary">
+<body class="custom-background">
     <div id="layoutAuthentication">
         <div id="layoutAuthentication_content">
             <main>
@@ -92,9 +95,9 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div>
-                                            <input type="submit" value="Create" class="btn btn-primary" />
-                                            <a class="btn btn-success" asp-action="Login" asp-controller="Account">Back</a>
+                                        <div class="text-center">
+                                            <input type="submit" value="Create" class="site-btn" />
+                                            <a class="site-btn" asp-action="Index" asp-controller="UserHome">Back</a>
                                         </div>
                                     </form>
                                 </div>
@@ -102,15 +105,6 @@
                         </div>
                     </div>
             </main>
-        </div>
-        <div id="layoutAuthentication_footer">
-            <footer class="py-4 bg-light mt-auto">
-                <div class="container-fluid px-4">
-                    <div class="d-flex align-items-center justify-content-between small">
-                        <div class="text-muted">Copy right &copy; VegetableShop</div>
-                    </div>
-                </div>
-            </footer>
         </div>
     </div>
     <script src="~/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>

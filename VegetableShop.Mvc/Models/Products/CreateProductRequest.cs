@@ -15,7 +15,7 @@ namespace VegetableShop.Mvc.Models.Products
         [Required(ErrorMessage = "Please enter price")]
         [Range(typeof(int), "0", "9999", ErrorMessage = "{0} must be a number between {1} and {2}")]
         public int Stock { set; get; }
-        public DateTime DateCreated { set; get; } = DateTime.Now;
+        public DateTime DateCreated { set; get; } = DateTime.UtcNow;
         public IFormFile? Image { get; set; }
         [DisplayName("Category")]
         public int? CategoryId { get; set; }
