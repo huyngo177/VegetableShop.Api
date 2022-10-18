@@ -1,0 +1,71 @@
+{
+  "Version": 1,
+  "Hash": "ZefHfBkURleOXHMjcWsQexmP3rp7ejCJRRjshaSYZQ4=",
+  "Source": "VegetableShop.Api",
+  "BasePath": "_content/VegetableShop.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "VegetableShop.Api\\wwwroot",
+      "Source": "VegetableShop.Api",
+      "ContentRoot": "D:\\Example\\Vegetable\\VegetableShop.Api\\VegetableShop.Api\\wwwroot\\",
+      "BasePath": "_content/VegetableShop.Api",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "D:\\Example\\Vegetable\\VegetableShop.Api\\VegetableShop.Api\\wwwroot\\Images\\Products\\51b39112-03ad-4324-8d22-4edcabcd77b3-orange.jpg",
+      "SourceId": "VegetableShop.Api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\Example\\Vegetable\\VegetableShop.Api\\VegetableShop.Api\\wwwroot\\",
+      "BasePath": "_content/VegetableShop.Api",
+      "RelativePath": "Images/Products/51b39112-03ad-4324-8d22-4edcabcd77b3-orange.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\Images\\Products\\51b39112-03ad-4324-8d22-4edcabcd77b3-orange.jpg"
+    },
+    {
+      "Identity": "D:\\Example\\Vegetable\\VegetableShop.Api\\VegetableShop.Api\\wwwroot\\Images\\Products\\e9f9f951-a25a-475f-96c6-a2dbe8dd58a8.jpg",
+      "SourceId": "VegetableShop.Api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\Example\\Vegetable\\VegetableShop.Api\\VegetableShop.Api\\wwwroot\\",
+      "BasePath": "_content/VegetableShop.Api",
+      "RelativePath": "Images/Products/e9f9f951-a25a-475f-96c6-a2dbe8dd58a8.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\Images\\Products\\e9f9f951-a25a-475f-96c6-a2dbe8dd58a8.jpg"
+    },
+    {
+      "Identity": "D:\\Example\\Vegetable\\VegetableShop.Api\\VegetableShop.Api\\wwwroot\\Images\\Products\\f0026cf3-4d1f-4c8f-8a89-3ef1bd656485-apple.jpg",
+      "SourceId": "VegetableShop.Api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\Example\\Vegetable\\VegetableShop.Api\\VegetableShop.Api\\wwwroot\\",
+      "BasePath": "_content/VegetableShop.Api",
+      "RelativePath": "Images/Products/f0026cf3-4d1f-4c8f-8a89-3ef1bd656485-apple.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\Images\\Products\\f0026cf3-4d1f-4c8f-8a89-3ef1bd656485-apple.jpg"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+D:\Example\Vegetable\VegetableShop.Api\VegetableShop.Integration\bin\Debug\net6.0\VegetableShop.Integration.deps.json
+D:\Example\Vegetable\VegetableShop.Api\VegetableShop.Integration\bin\Debug\net6.0\VegetableShop.Integration.dll
+D:\Example\Vegetable\VegetableShop.Api\VegetableShop.Integration\bin\Debug\net6.0\VegetableShop.Integration.pdb
+D:\Example\Vegetable\VegetableShop.Api\VegetableShop.Integration\obj\Debug\net6.0\VegetableShop.Integration.csproj.AssemblyReference.cache
+D:\Example\Vegetable\VegetableShop.Api\VegetableShop.Integration\obj\Debug\net6.0\VegetableShop.Integration.GeneratedMSBuildEditorConfig.editorconfig
+D:\Example\Vegetable\VegetableShop.Api\VegetableShop.Integration\obj\Debug\net6.0\VegetableShop.Integration.AssemblyInfoInputs.cache
+D:\Example\Vegetable\VegetableShop.Api\VegetableShop.Integration\obj\Debug\net6.0\VegetableShop.Integration.AssemblyInfo.cs
+D:\Example\Vegetable\VegetableShop.Api\VegetableShop.Integration\obj\Debug\net6.0\VegetableShop.Integration.csproj.CoreCompileInputs.cache
+D:\Example\Vegetable\VegetableShop.Api\VegetableShop.Integration\obj\Debug\net6.0\VegetableShop.Integration.dll
+D:\Example\Vegetable\VegetableShop.Api\VegetableShop.Integration\obj\Debug\net6.0\refint\VegetableShop.Integration.dll
+D:\Example\Vegetable\VegetableShop.Api\VegetableShop.Integration\obj\Debug\net6.0\VegetableShop.Integration.pdb
+D:\Example\Vegetable\VegetableShop.Api\VegetableShop.Integration\obj\Debug\net6.0\ref\VegetableShop.Integration.dll
